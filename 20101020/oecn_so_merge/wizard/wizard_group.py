@@ -2,9 +2,6 @@
 ##############################################################################
 #
 #    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>). All Rights Reserved
-#    $Id$
-#
 #    This program is free software: you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
 #    the Free Software Foundation, either version 3 of the License, or
@@ -44,18 +41,12 @@ merge_form = """<?xml version="1.0"?>
 """
 
 merge_fields = {
+    'customer': {'string': 'New customer', 'type': 'many2one', 'relation': 'res.partner', 'required': True},    
 }
-
-ack_form = """<?xml version="1.0"?>
-<form string="Merge orders">
-    <separator string="Orders merged"/>
-</form>"""
-
-ack_fields = {}
 
 
 def _merge_orders(self, cr, uid, data, context):
-    order_obj = pooler.get_pool(cr.dbname).get('purchase.order')
+    order_obj = pooler.get_pool(cr.dbname).get('sale.order')
 
     def make_key(br, fields):
         list_key = []
@@ -73,11 +64,13 @@ def _merge_orders(self, cr, uid, data, context):
             list_key.append((field, field_val))
         list_key.sort()
         return tuple(list_key)
+    # get new customer infos
+    customer = data['form']['customer']
 
     # compute what the new orders should contain
     new_orders = {}
     for porder in [order for order in order_obj.browse(cr, uid, data['ids']) if order.state == 'draft']:
-        order_key = make_key(porder, ('partner_id', 'location_id', 'pricelist_id'))
+        order_key = make_key(porder, ('pricelist_id'))
 
         new_order = new_orders.setdefault(order_key, ({}, []))
         new_order[1].append(porder.id)
@@ -86,19 +79,17 @@ def _merge_orders(self, cr, uid, data, context):
             order_infos.update({
                 'origin': porder.origin,
                 'date_order': time.strftime('%Y-%m-%d'),
-                'partner_id': porder.partner_id.id,
-                'partner_address_id': porder.partner_address_id.id,
-                'dest_address_id': porder.dest_address_id.id,
-                'warehouse_id': porder.warehouse_id.id,
-                'location_id': porder.location_id.id,
+                'partner_id': customer,
+                'partner_order_id': porder.partner_order_id.id,
+                'dest_shipping_id': porder.dest_shipping_id.id,
+                'dest_invoice_id': porder.dest_invoice_id.id,
+                'shop_id': porder.shop_id.id,
                 'pricelist_id': porder.pricelist_id.id,
                 'state': 'draft',
                 'order_line': {},
                 'notes': '%s' % (porder.notes or '',),
-                'fiscal_position': porder.fiscal_position and porder.fiscal_position.id or False,
             })
         else:
-            #order_infos['name'] += ', %s' % porder.name
             if porder.notes:
                 order_infos['notes'] = (order_infos['notes'] or '') + ('\n%s' % (porder.notes,))
             if porder.origin:
@@ -107,17 +98,6 @@ def _merge_orders(self, cr, uid, data, context):
         for order_line in porder.order_line:
             line_key = make_key(order_line, ('name', 'date_planned', 'taxes_id', 'price_unit', 'notes', 'product_id', 'move_dest_id', 'account_analytic_id'))
             o_line = order_infos['order_line'].setdefault(line_key, {})
-            if o_line:
-                # merge the line with an existing line
-                o_line['product_qty'] += order_line.product_qty * order_line.product_uom.factor / o_line['uom_factor']
-            else:
-                # append a new "standalone" line
-                for field in ('product_qty', 'product_uom'):
-                    field_val = getattr(order_line, field)
-                    if isinstance(field_val, browse_record):
-                        field_val = field_val.id
-                    o_line[field] = field_val
-                o_line['uom_factor'] = order_line.product_uom and order_line.product_uom.factor or 1.0
 
     wf_service = netsvc.LocalService("workflow")
 
@@ -140,12 +120,12 @@ def _merge_orders(self, cr, uid, data, context):
 
         # make triggers pointing to the old orders point to the new order
         for old_id in old_ids:
-            wf_service.trg_redirect(uid, 'purchase.order', old_id, neworder_id, cr)
-            wf_service.trg_validate(uid, 'purchase.order', old_id, 'purchase_cancel', cr)
+            wf_service.trg_redirect(uid, 'sale.order', old_id, neworder_id, cr)
+            wf_service.trg_validate(uid, 'sale.order', old_id, 'cancel', cr)
 
     return {
         'domain': "[('id','in', [" + ','.join(map(str, allorders)) + "])]",
-        'name': 'Purchase Orders',
+        'name': 'Sales Orders',
         'view_type': 'form',
         'view_mode': 'tree,form',
         'res_model': 'purchase.order',
@@ -166,5 +146,5 @@ class merge_orders(wizard.interface):
         },
     }
 
-merge_orders("purchase.order.merge")
+merge_orders("oecn.sale.order.merge")
 
