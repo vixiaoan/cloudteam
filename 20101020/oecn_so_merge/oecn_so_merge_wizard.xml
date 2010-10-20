@@ -2,7 +2,7 @@
 <openerp>
   <data>
     <wizard id="oecn_sales_order_merge"
-            model="sales.order"
+            model="sale.order"
             multi="True"
             keyword="client_action_multi"
             name="oecn.sale.order.merge"
