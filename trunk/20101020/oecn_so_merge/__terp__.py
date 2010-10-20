@@ -23,7 +23,7 @@
 
 {
     'name': 'Sale Order merge',
-    'version': '1.0',
+    'version': '1.1',
     'category': 'Generic Modules/Sales & Purchases',
     'description': """Module for sales management
     Provide a wizard to merge selected sale order""",
@@ -34,7 +34,7 @@
     'update_xml': [
         'oecn_so_merge_wizard.xml',
     ],
-    'demo_xml': [
+    'demo_xml': [],
     'installable': True,
     'active': False,
     'certificate': '',
