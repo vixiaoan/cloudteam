@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+  <data>
+    <wizard id="oecn_sales_order_merge"
+            model="sales.order"
+            multi="True"
+            keyword="client_action_multi"
+            name="oecn.sale.order.merge"
+            string="Merge sale order"/>
+  </data>
+</openerp>

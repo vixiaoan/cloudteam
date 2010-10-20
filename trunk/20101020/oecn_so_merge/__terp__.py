@@ -22,17 +22,17 @@
 
 
 {
-    'name': 'Purchase Management',
-    'version': '1.1',
+    'name': 'Sale Order merge',
+    'version': '1.0',
     'category': 'Generic Modules/Sales & Purchases',
-    'description': """Module for purchase management
-    Request for quotation, Create Supplier Invoice, Print Order...""",
-    'author': 'Tiny',
-    'website': 'http://www.openerp.com',
+    'description': """Module for sales management
+    Provide a wizard to merge selected sale order""",
+    'author': 'Jeff',
+    'website': 'http://openerp-china.org',
     'depends': ['sale'],
     'init_xml': [],
     'update_xml': [
-        'purchase_wizard.xml',
+        'oecn_so_merge_wizard.xml',
     ],
     'demo_xml': [
     'installable': True,
