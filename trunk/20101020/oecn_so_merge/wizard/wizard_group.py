@@ -64,11 +64,17 @@ def _merge_orders(self, cr, uid, data, context):
             'pricelist_id': porder.pricelist_id.id,
         })
         old_data = order_obj.copy_data(cr, uid, porder.id)
+
         order_data['order_line'] = order_data['order_line'] + old_data[0]['order_line'] 
     if len(old_ids) < 2:
         raise wizard.except_wizard(_('Error'), _('Please select at least two quota to merge'))    
+    
+    #empty the order_partner_id
+    for sol in order_data['order_line']:
+       sol[2]['order_partner_id'] = 0
     # create the new order
     neworder_id = order_obj.create(cr, uid, order_data)
+
 
     # make triggers pointing to the old orders point to the new order
     for old_id in old_ids:
