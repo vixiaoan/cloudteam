@@ -38,11 +38,14 @@ merge_fields = {
 
 
 def _merge_orders(self, cr, uid, data, context):
+
     wf_service = netsvc.LocalService("workflow")
     order_obj = pooler.get_pool(cr.dbname).get('sale.order')
     # get new customer infos
     customer = data['form']['customer']
     addr = pooler.get_pool(cr.dbname).get('res.partner').address_get(cr, uid, [customer], ['delivery', 'invoice', 'contact'])
+    part = pooler.get_pool(cr.dbname).get('res.partner').browse(cr, uid, customer)
+
     # prepare header data
     old_ids = []
     order_data = {
@@ -52,29 +55,39 @@ def _merge_orders(self, cr, uid, data, context):
         'partner_shipping_id': addr['delivery'],
         'partner_invoice_id': addr['invoice'],
         'shop_id': 0,
-        'pricelist_id': 0,
+        'pricelist_id': part.property_product_pricelist and part.property_product_pricelist.id or False,
         'state': 'draft',
         'order_line': [],
     }
+
     # prepare line data
     for porder in [order for order in order_obj.browse(cr, uid, data['ids']) if order.state == 'draft']:
         old_ids.append(porder.id)
         order_data.update({
             'shop_id': porder.shop_id.id,
-            'pricelist_id': porder.pricelist_id.id,
         })
         old_data = order_obj.copy_data(cr, uid, porder.id)
 
         order_data['order_line'] = order_data['order_line'] + old_data[0]['order_line'] 
+    
     if len(old_ids) < 2:
         raise wizard.except_wizard(_('Error'), _('Please select at least two quota to merge'))    
     
-    #empty the order_partner_id
+    line_obj = pooler.get_pool(cr.dbname).get('sale.order.line')
     for sol in order_data['order_line']:
+       #empty the order_partner_id
        sol[2]['order_partner_id'] = 0
+       #recalculate the price
+       sol[2]['price_unit'] = pooler.get_pool(cr.dbname).get('product.pricelist').price_get(cr, uid, [order_data['pricelist_id']],
+                    sol[2]['product_id'], sol[2]['product_uom_qty'] , order_data['partner_id'], {
+                        'uom': sol[2]['product_uom'],
+                        'date': order_data['date_order'],
+                        })[order_data['pricelist_id']]
+
+    allorders = []
     # create the new order
     neworder_id = order_obj.create(cr, uid, order_data)
-
+    allorders.append(neworder_id)
 
     # make triggers pointing to the old orders point to the new order
     for old_id in old_ids:
@@ -82,8 +95,7 @@ def _merge_orders(self, cr, uid, data, context):
         wf_service.trg_validate(uid, 'sale.order', old_id, 'cancel', cr)
 
     return {
-        # not work here
-        'domain': "[('id','==',neworder_id)]",
+        'domain': "[('id','in', [" + ','.join(map(str, allorders)) + "])]",
         'name': 'Sale Orders',
         'view_type': 'form',
         'view_mode': 'tree,form',
