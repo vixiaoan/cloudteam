@@ -56,6 +56,7 @@ def _merge_orders(self, cr, uid, data, context):
         'partner_invoice_id': addr['invoice'],
         'shop_id': 0,
         'pricelist_id': part.property_product_pricelist and part.property_product_pricelist.id or False,
+        'fiscal_position': part.property_account_position,
         'state': 'draft',
         'order_line': [],
     }
@@ -83,6 +84,11 @@ def _merge_orders(self, cr, uid, data, context):
                         'uom': sol[2]['product_uom'],
                         'date': order_data['date_order'],
                         })[order_data['pricelist_id']]
+       #get tax from customer fiscal position 
+       product_obj = pooler.get_pool(cr.dbname).get('product.product').browse(cr, uid, sol[2]['product_id'])
+       sol[2]['tax_id'] = pooler.get_pool(cr.dbname).get('account.fiscal.position').map_tax(cr, uid, order_data['fiscal_position'], product_obj.taxes_id)
+       sol[2]['discount'] = 0
+       sol[2]['delay'] = 0
 
     allorders = []
     # create the new order
