@@ -20,7 +20,6 @@
 import time
 
 import wizard
-import netsvc
 import pooler
 from osv.orm import browse_record, browse_null
 from tools.translate import _
@@ -39,67 +38,18 @@ merge_fields = {
 
 def _merge_orders(self, cr, uid, data, context):
 
-    wf_service = netsvc.LocalService("workflow")
     order_obj = pooler.get_pool(cr.dbname).get('sale.order')
     # get new customer infos
     customer = data['form']['customer']
-    addr = pooler.get_pool(cr.dbname).get('res.partner').address_get(cr, uid, [customer], ['delivery', 'invoice', 'contact'])
-    part = pooler.get_pool(cr.dbname).get('res.partner').browse(cr, uid, customer)
-
-    # prepare header data
     old_ids = []
-    order_data = {
-        'date_order': time.strftime('%Y-%m-%d'),
-        'partner_id': customer,
-        'partner_order_id': addr['contact'],
-        'partner_shipping_id': addr['delivery'],
-        'partner_invoice_id': addr['invoice'],
-        'shop_id': 0,
-        'pricelist_id': part.property_product_pricelist and part.property_product_pricelist.id or False,
-        'fiscal_position': part.property_account_position,
-        'state': 'draft',
-        'order_line': [],
-    }
-
-    # prepare line data
-    for porder in [order for order in order_obj.browse(cr, uid, data['ids']) if order.state == 'draft']:
-        old_ids.append(porder.id)
-        order_data.update({
-            'shop_id': porder.shop_id.id,
-        })
-        old_data = order_obj.copy_data(cr, uid, porder.id)
-
-        order_data['order_line'] = order_data['order_line'] + old_data[0]['order_line'] 
-    
+    # orders to merge
+    for sorder in [order for order in order_obj.browse(cr, uid, data['ids']) if order.state == 'draft']:
+        old_ids.append(sorder.id)
     if len(old_ids) < 2:
         raise wizard.except_wizard(_('Error'), _('Please select at least two quota to merge'))    
-    
-    line_obj = pooler.get_pool(cr.dbname).get('sale.order.line')
-    for sol in order_data['order_line']:
-       #empty the order_partner_id
-       sol[2]['order_partner_id'] = 0
-       #recalculate the price
-       sol[2]['price_unit'] = pooler.get_pool(cr.dbname).get('product.pricelist').price_get(cr, uid, [order_data['pricelist_id']],
-                    sol[2]['product_id'], sol[2]['product_uom_qty'] , order_data['partner_id'], {
-                        'uom': sol[2]['product_uom'],
-                        'date': order_data['date_order'],
-                        })[order_data['pricelist_id']]
-       #get tax from customer fiscal position 
-       product_obj = pooler.get_pool(cr.dbname).get('product.product').browse(cr, uid, sol[2]['product_id'])
-       sol[2]['tax_id'] = pooler.get_pool(cr.dbname).get('account.fiscal.position').map_tax(cr, uid, order_data['fiscal_position'], product_obj.taxes_id)
-       sol[2]['discount'] = 0
-       sol[2]['delay'] = 0
-
-    allorders = []
-    # create the new order
-    neworder_id = order_obj.create(cr, uid, order_data)
-    allorders.append(neworder_id)
-
-    # make triggers pointing to the old orders point to the new order
-    for old_id in old_ids:
-        wf_service.trg_redirect(uid, 'sale.order', old_id, neworder_id, cr)
-        wf_service.trg_validate(uid, 'sale.order', old_id, 'cancel', cr)
-
+    context['customer_id'] = customer
+    context['old_ids'] = old_ids
+    allorders = order_obj.merge(cr, uid, context)
     return {
         'domain': "[('id','in', [" + ','.join(map(str, allorders)) + "])]",
         'name': 'Sale Orders',
