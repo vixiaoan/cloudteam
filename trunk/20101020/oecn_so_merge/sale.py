@@ -50,6 +50,7 @@ class sale_order(osv.osv):
            sol[2]['delay'] = 0
         
         allorders = []
+        order_data['fiscal_position'] = part.property_account_position.id
         # create the new order
         neworder_id = self.create(cr, uid, order_data)
         allorders.append(neworder_id)
