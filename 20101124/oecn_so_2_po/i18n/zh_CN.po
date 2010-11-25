@@ -1,0 +1,40 @@
+﻿# Translation of OpenERP Server.
+# This file contains the translation of the following modules:
+#	* oecn_so_2_po
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: OpenERP Server 5.0.14\n"
+"Report-Msgid-Bugs-To: support@openerp.com\n"
+"POT-Creation-Date: 2010-10-23 04:35:30+0000\n"
+"PO-Revision-Date: 2010-10-23 04:35:30+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: oecn_so_2_po
+#: model:ir.module.module,shortdesc:oecn_so_2_po.module_meta_information
+msgid "sale order to purchase ordre"
+msgstr "销售时创建采购单"
+
+
+#. module: oecn_so_2_po
+#: model:ir.module.module,description:oecn_so_2_po.module_meta_information
+msgid "Recognized on the sale of certain business partners in order to automatically generate purchase orders"
+msgstr "对某些业务伙伴在确认销售订单时自动生成采购单"
+
+
+
+#. module: oecn_so_2_po
+#: field:res.partner,createpurchase:0
+msgid "Auto Purchase Order"
+msgstr "自动创建采购单"
+
+#. module: oecn_so_2_po
+#: help:res.partner,createpurchase:0
+msgid "Create purchase of sale order Confirmation"
+msgstr "在确认销售订单时自动创建采购单"
+
