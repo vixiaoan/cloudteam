@@ -38,3 +38,12 @@ msgstr "自动创建采购单"
 msgid "Create purchase of sale order Confirmation"
 msgstr "在确认销售订单时自动创建采购单"
 
+#. module: oecn_so_2_po
+#: field:sale.sale_order,related_id:0
+msgid "Related ID"
+msgstr "关联订单号"
+
+#. module: oecn_so_2_po
+#: help:sale.sale_order,related_id:0
+msgid "Related partner sale order"
+msgstr "业务伙伴的关联订单"
