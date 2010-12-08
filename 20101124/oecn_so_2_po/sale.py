@@ -3,7 +3,7 @@
 #
 #    Created on 2010-11-25
 #    @author: stbrine@yahoo.com.cn
-#    参考sale_order partner_change 和 sale_order_line product_id_change
+#    
 ##############################################################################
 
 import time
@@ -123,7 +123,6 @@ class sale_order(osv.osv):
                     })
                         
 
-<<<<<<< .mine
     def write(self, cr, uid, ids, vals, context=None):
         #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, 'start1')
         if context.has_key('only_update_p') and context['only_update_p']:
@@ -465,9 +464,8 @@ class sale_order(osv.osv):
         #res['value']['order_line'] = [6]
         self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, 'value:%s'%res)
         return res
-        """
+    """
         
-=======
     def write(self, cr, uid, ids, vals, context=None):
         #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, 'start1')
         if context.has_key('only_update_p') and context['only_update_p']:
@@ -767,7 +765,4 @@ class sale_order(osv.osv):
                             new_context = {'only_update_p':True}
                         self.write(cr, uid, res, {'related_id':res2}, context=new_context)
         return res
-
-
->>>>>>> .r18
 sale_order()
