@@ -2,7 +2,7 @@
 1. 原order.related_id为空
 1.1 无业务伙伴更新 ok
 1.2 新业务伙伴不需auto create ok
-1.3 新业务伙伴需auto create 
+1.3 新业务伙伴需auto create ok
 2. 原order.related_id不为空
 2.1 无业务伙伴更新  ok
 2.2 新业务伙伴不需auto create ok
