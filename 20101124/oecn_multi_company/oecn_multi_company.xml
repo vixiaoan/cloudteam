@@ -23,6 +23,16 @@
                 </field>
             </field>
         </record>
+        <record model="ir.ui.view" id="partner_company_form">
+            <field name="name">partner.form.multicompany</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <field name="ref" position="after">
+                    <field name="company_id" select="1"/>
+                </field>
+            </field>
+        </record>
         
     </data>
 </openerp>
