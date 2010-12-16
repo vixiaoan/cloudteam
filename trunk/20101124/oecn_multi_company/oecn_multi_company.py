@@ -43,4 +43,14 @@ class purchase_order(osv.osv):
             vals.update({'company_id': company})
         return super(purchase_order, self).create(cr, uid, vals, context=context)
     
-purchase_order() 
+purchase_order()
+class res_partner(osv.osv):
+    _inherit = 'res.partner'
+    _columns = {
+        'company_id': fields.many2one('res.company', 'Company'),
+    }
+    _defaults = {
+        'company_id': lambda self,cr,uid,c: self.pool.get('res.users').browse(cr, uid, uid, c).company_id.id,
+    }
+res_partner()
+         

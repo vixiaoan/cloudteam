@@ -22,5 +22,14 @@
             <field name="rule_group" ref="purchase_order_rule_group"/>
         </record>
 
+        <record model="ir.rule.group" id="partner_rule_group">
+            <field name="name">partner multi-company</field>
+            <field name="model_id" search="[('model','=','res.partner')]" model="ir.model"/>
+        <field name="global" eval="True"/>
+        </record>
+            <record model="ir.rule" id="partner_rule">
+            <field name="domain_force">['|',('company_id','child_of',[user.company_id.id]),('company_id','=',False)]</field>
+            <field name="rule_group" ref="partner_rule_group"/>
+        </record>
     </data>
 </openerp>
