@@ -1,4 +1,4 @@
-﻿# -*- encoding: utf-8 -*-
+# -*- encoding: utf-8 -*-
 ##############################################################################
 #
 #    Created on 2010-11-25
@@ -19,7 +19,7 @@ class sale_order(osv.osv):
     logger = netsvc.Logger()
     #related_id销售订单的关联副本
     _columns = {
-        'related_id': fields.many2one('sale.order', 'Related ID', readonly=True, help='Related partner sale order'),
+        'related_id': fields.integer( 'Related ID', readonly=True, help='Related partner sale order'),
     }  
 
     def _getuidlist(self, cr, uid, partnerid, context=None):
@@ -33,7 +33,7 @@ class sale_order(osv.osv):
                 company_id = self.pool.get('res.company').search(cr, uid, [])[0]
             if company_id:
                ruid = self.pool.get('res.users').search(cr, uid, [('company_id','=',company_id)])
-
+        #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, 'ruid:%s'%ruid)
         return ruid
     
     def _getuid(self, cr, uid, partnerid, context=None):
@@ -108,21 +108,21 @@ class sale_order(osv.osv):
                     })
                 #这里能否在当前销售订单的 客户参考: 字段记录一下此so对应的客户po号？        
     
-    def _partner_change_u_line(self, cr, uid, saleorder, context=None):
-        """"partner改变时，更新订单明细价格"""
-        for line in saleorder.order_line:
-            r_v = self.pool.get('sale.order.line').product_id_change(cr, uid, [line.id],
-                vals.get('pricelist_id', o.pricelist_id.id), line.product_id.id, qty=line.product_uom_qty,
-                partner_id=vals['partner_id'],
-                packaging=line.product_packaging.id, fiscal_position=True
-            )
-            self.pool.get('sale.order.line').write(cr, uid, line.id, r_v['value'], context=context)        
+#    def _partner_change_u_line(self, cr, uid, saleorder, context=None):
+#        """"partner改变时，更新订单明细价格"""
+#        for line in saleorder.order_line:
+#            r_v = self.pool.get('sale.order.line').product_id_change(cr, uid, [line.id],
+#                vals.get('pricelist_id', o.pricelist_id.id), line.product_id.id, qty=line.product_uom_qty,
+#                partner_id=vals['partner_id'],
+#                packaging=line.product_packaging.id, fiscal_position=True
+#            )
+#            self.pool.get('sale.order.line').write(cr, uid, line.id, r_v['value'], context=context)        
 
     def _partner_change_u_line(self, cr, uid, vals, saleorder, context=None):
         """partner改变时，更新订单明细价格"""
         for line in saleorder.order_line:
             r_v = self.pool.get('sale.order.line').product_id_change(cr, uid, [line.id],
-                vals.get('pricelist_id', o.pricelist_id.id), line.product_id.id, qty=line.product_uom_qty,
+                vals.get('pricelist_id', saleorder.pricelist_id.id), line.product_id.id, qty=line.product_uom_qty,
                 partner_id=vals['partner_id'],
                 packaging=line.product_packaging.id, fiscal_position=True
             )
@@ -149,26 +149,30 @@ class sale_order(osv.osv):
             if not partnet_id_list:
                 #业务伙伴不存在客户，引发异常,终于有机会用到翻译了.
                 raise osv.except_osv(_('Error !'), _('Partners do not exist.'))
-            user_obj = self.pool.get('res.users').browse(cr, uid, new_uid, context=context)
+            user_obj = self.pool.get('res.users').browse(cr, new_uid, new_uid, context=context)
             #取最新的partner
-            partner = self.pool.get('res.partner').browse(cr, uid, partnet_id_list[0], context=context)
+            partner = self.pool.get('res.partner').browse(cr, new_uid, partnet_id_list[0], context=context)
             partner_id = partner.id
             #联系人
-            partner_order_id = self.pool.get('res.partner').address_get(cr, uid, [partner_id], ['contact'])['contact']
+            partner_order_id = self.pool.get('res.partner').address_get(cr, new_uid, [partner_id], ['contact'])['contact']
             #发票地址
-            partner_invoice_id = self.pool.get('res.partner').address_get(cr, uid, [partner_id], ['invoice'])['invoice']
+            partner_invoice_id = self.pool.get('res.partner').address_get(cr, new_uid, [partner_id], ['invoice'])['invoice']
             #送货地址
-            partner_shipping_id = self.pool.get('res.partner').address_get(cr, uid, [partner_id], ['delivery'])['delivery']
+            partner_shipping_id = self.pool.get('res.partner').address_get(cr, new_uid, [partner_id], ['delivery'])['delivery']
             pricelist_id = partner.property_product_pricelist_purchase.id
             #shop是否也得改?
+            shop_id = self.pool.get('sale.shop').search(cr, new_uid, [('warehouse_id.company_id.id','=',partner.company_id.id)])
             update_vals = {
                 'user_id':new_uid,
                 'partner_id':partner_id,
                 'partner_order_id':partner_order_id,
                 'partner_invoice_id':partner_invoice_id,
-                'partner_shipping_id':partner_shipping_id
+                'partner_shipping_id':partner_shipping_id,
+                'shop_id':shop_id[0]
+                
             }                        
             new_data.update(update_vals)
+            #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, '175_new_data:%s'%new_data)
             res = self.create(cr, new_uid, new_data, context)#创建副本
             #end if new_uid_l                    
         return res
@@ -183,27 +187,30 @@ class sale_order(osv.osv):
         if new_uid_l:
             new_uid = self._getuid(cr, uid, vals['partner_id'], context=context)
             #('createpurchase','=',False)防止进入死循环， order='create_date desc':按创建日期降序
-            partnet_id_list = self.pool.get('res.partner').search(cr, uid, [('createpurchase','=',False),('create_uid','in',new_uid_l)], order='create_date desc')
+            partnet_id_list = self.pool.get('res.partner').search(cr, new_uid, [('createpurchase','=',False),('create_uid','in',new_uid_l)], order='create_date desc')
             if not partnet_id_list:
                 raise osv.except_osv(_('Error !'), _('Partners do not exist.'))            
-            user_obj = self.pool.get('res.users').browse(cr, uid, new_uid, context=context)
+            user_obj = self.pool.get('res.users').browse(cr, new_uid, new_uid, context=context)
             #取最新的partner
-            partner = self.pool.get('res.partner').browse(cr, uid, partnet_id_list[0], context=context)
+            partner = self.pool.get('res.partner').browse(cr, new_uid, partnet_id_list[0], context=context)
             partner_id = partner.id
             #联系人
-            partner_order_id = self.pool.get('res.partner').address_get(cr, uid, [partner_id], ['contact'])['contact']
+            partner_order_id = self.pool.get('res.partner').address_get(cr, new_uid, [partner_id], ['contact'])['contact']
             #发票地址
-            partner_invoice_id = self.pool.get('res.partner').address_get(cr, uid, [partner_id], ['invoice'])['invoice']
+            partner_invoice_id = self.pool.get('res.partner').address_get(cr, new_uid, [partner_id], ['invoice'])['invoice']
             #送货地址
-            partner_shipping_id = self.pool.get('res.partner').address_get(cr, uid, [partner_id], ['delivery'])['delivery']
+            partner_shipping_id = self.pool.get('res.partner').address_get(cr, new_uid, [partner_id], ['delivery'])['delivery']
             pricelist_id = partner.property_product_pricelist_purchase.id
             #shop是否也得改?
+            shop_id = self.pool.get('sale.shop').search(cr, new_uid, [('warehouse_id.company_id.id','=',partner.company_id.id)])
+            #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, 'shop_id:%s partner:%s'%(shop_id,partner))
             update_vals = {
                 'user_id':new_uid,
                 'partner_id':partner_id,
                 'partner_order_id':partner_order_id,
                 'partner_invoice_id':partner_invoice_id,
-                'partner_shipping_id':partner_shipping_id
+                'partner_shipping_id':partner_shipping_id,
+                'shop_id':shop_id[0]
             }                        
             new_vals = vals.copy()
             new_vals.update(update_vals)
@@ -221,7 +228,7 @@ class sale_order(osv.osv):
                 new_context = {'only_update_p':True}                                    
                 
             #更新订单主表
-            self.write(cr, uid, [o.related_id.id], new_vals, context=new_context)        
+            self.write(cr, new_uid, [o.related_id], new_vals, context=new_context)        
 
 
     def _update_orderline_to_buypartner(self, cr, uid, orderid, o, context=None):        
@@ -249,13 +256,16 @@ class sale_order(osv.osv):
                 #'notes': o_line.notes,
                 'type': o_line.type
             }
-            self.pool.get('sale.order.line').create(cr, new_uid, lines, context)        
+            #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, '---259---')
+            self.pool.get('sale.order.line').create(cr, new_uid, lines, context)       
+            #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, '---261---')            
 
             
     def write(self, cr, uid, ids, vals, context=None):
+        #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, 'vals:%s'%vals)
         if context.get('only_update_p',False):
             return super(sale_order, self).write(cr, uid,  ids, vals, context=context)  
-            #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, 'start2')
+            #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, 'vals:%s'%s)
         
         for o in self.browse(cr, uid, ids, context=context):
             runflag = False        
@@ -267,19 +277,20 @@ class sale_order(osv.osv):
                     #end if not ('partner_id' in vals)
                     else:
                         #如果partner更新,则更新明细价格
-                        _partner_change_u_line(cr, uid, vals, o, context=context)
+                        self._partner_change_u_line(cr, uid, vals, o, context=context)
 
                         buy_partner = self.pool.get('res.partner').browse(cr, uid, vals['partner_id'], context=context)
                         if buy_partner and (not buy_partner.createpurchase):#1.2 新业务伙伴不需auto create
                             res = super(sale_order, self).write(cr, uid,  o.id, vals, context=context)                            
                             runflag = True
                         else:#1.3 新业务伙伴需auto create 
-                            new_id = _create_order_to_buypartner(cr, uid, vals, o, context=None)
+                            new_id = self._create_order_to_buypartner(cr, uid, vals, o, context=None)
                             if new_id:
                                 new_vals = vals.copy()
                                 new_vals.update({'related_id':new_id})
-
+                                #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, 'newI_id:%s o.id:%s new_vals:%s'%(new_id,o.id,new_vals))
                                 #如果在创建之前执行，会出现已被更新提示
+                                #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, '---291---')
                                 res = super(sale_order, self).write(cr, uid,  o.id, new_vals, context=context)                            
                                 runflag = True
                                 #保存order后再更新副本
@@ -309,11 +320,12 @@ class sale_order(osv.osv):
                                     new_context = {'only_update_p':True}
                                 
                                 #更新订单主表
-                                self.write(cr, uid, [new_id], new_vals, context=new_context)
-                                
+                                self.write(cr, 1, [new_id], new_vals, context=new_context)
+                                #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, '---321---')
                                 #如果存在明细修改
                                 if 'order_line' in vals:
-                                    _update_orderline_to_buypartner(cr, uid, new_id, o, context=context)
+                                    self._update_orderline_to_buypartner(cr, 1, new_id, o, context=context)
+                                #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, '---325---')
                         #end else if buy_partner and (not buy_partner.createpurchase)
                     #end else if not ('partner_id' in vals):#1.1 无业务伙伴更新
                 #end if not o.related_id
@@ -325,17 +337,16 @@ class sale_order(osv.osv):
                         
                         #如果存在明细修改
                         if 'order_line' in vals:
-                            _update_orderline_to_buypartner(cr, uid, o.related_id.id, o, context=context)
+                            _update_orderline_to_buypartner(cr, uid, o.related_id, o, context=context)
                         
                     #end if not ('partner_id' in vals):#2.1 无业务伙伴更新
                     else:
                         #如果partner更新,则更新明细价格
-                        _partner_change_u_line(cr, uid, vals, o, context=context)
-                        
+                        self._partner_change_u_line(cr, uid, vals, o, context=context)
                         buy_partner = self.pool.get('res.partner').browse(cr, uid, vals['partner_id'], context=context)
                         if buy_partner and (not buy_partner.createpurchase):#2.2 新业务伙伴不需auto create
                             #如果新的伙伴不需要自动创建order则删除关联订单
-                            self.pool.get('sale.order').unlink(cr, uid, [o.related_id.id])
+                            self.pool.get('sale.order').unlink(cr, uid, [o.related_id])
                             vals.update({'related_id':None})
                             res = super(sale_order, self).write(cr, uid,  o.id, vals, context=context)                            
                             runflag = True
@@ -345,7 +356,7 @@ class sale_order(osv.osv):
                             _update_order_to_buypartner(cr, uid, vals, o, context=None)                            
                             #如果存在明细修改
                             if 'order_line' in vals:
-                                _update_orderline_to_buypartner(cr, uid, o.related_id.id, o, context=context)                         
+                                _update_orderline_to_buypartner(cr, uid, o.related_id, o, context=context)                         
 
                                 #end else if buy_partner and (not buy_partner.createpurchase)    
                     #end else if not ('partner_id' in vals):#2.1 无业务伙伴更新
@@ -353,6 +364,7 @@ class sale_order(osv.osv):
             #end if o.state=='draft':
             
             if not runflag:
+                #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, '---366---')
                 res = super(sale_order, self).write(cr, uid, o.id, vals, context=context)                            
         #end for o in self.browse(cr, uid, ids, context=context):    
         return res 
@@ -365,29 +377,33 @@ class sale_order(osv.osv):
             if buy_partner and buy_partner.createpurchase:
                 #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, 'start2')
                 new_uid_l = self._getuidlist(cr, uid, vals['partner_id'], context=context)
-                #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, 'error%s'%new_uid_l)
+                #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, 'new_uid_l:%s'%new_uid_l)
                 if new_uid_l:
                     new_uid = self._getuid(cr, uid, vals['partner_id'], context=context)
                     #('createpurchase','=',False)防止进入死循环， order='create_date desc':按创建日期降序
-                    partnet_id_list = self.pool.get('res.partner').search(cr, uid, [('createpurchase','=',False),('create_uid','in',new_uid_l)], order='create_date desc')
-                    user_obj = self.pool.get('res.users').browse(cr, uid, new_uid, context=context)
+                    partnet_id_list = self.pool.get('res.partner').search(cr, new_uid, [('createpurchase','=',False)], order='create_date desc')
+                    #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, 'partnet_id_list:%s'%partnet_id_list)
+                    user_obj = self.pool.get('res.users').browse(cr, new_uid, new_uid, context=context)
                     #取最新的partner
-                    partner = self.pool.get('res.partner').browse(cr, uid, partnet_id_list[0], context=context)
+                    partner = self.pool.get('res.partner').browse(cr, new_uid, partnet_id_list[0], context=context)
                     partner_id = partner.id
                     #联系人
-                    partner_order_id = self.pool.get('res.partner').address_get(cr, uid, [partner_id], ['contact'])['contact']
+                    partner_order_id = self.pool.get('res.partner').address_get(cr, new_uid, [partner_id], ['contact'])['contact']
                     #发票地址
-                    partner_invoice_id = self.pool.get('res.partner').address_get(cr, uid, [partner_id], ['invoice'])['invoice']
+                    partner_invoice_id = self.pool.get('res.partner').address_get(cr, new_uid, [partner_id], ['invoice'])['invoice']
                     #送货地址
-                    partner_shipping_id = self.pool.get('res.partner').address_get(cr, uid, [partner_id], ['delivery'])['delivery']
+                    partner_shipping_id = self.pool.get('res.partner').address_get(cr, new_uid, [partner_id], ['delivery'])['delivery']
                     pricelist_id = partner.property_product_pricelist_purchase.id
                     #shop是否也得改?
+                    shop_id = self.pool.get('sale.shop').search(cr, new_uid, [('warehouse_id.company_id.id','=',partner.company_id.id)])
+                    #self.logger.notifyChannel('addons.'+self._name, netsvc.LOG_INFO, 'shop_id:%s partner:%s'%(shop_id,partner))
                     update_vals = {
                         'user_id':new_uid,
                         'partner_id':partner_id,
                         'partner_order_id':partner_order_id,
                         'partner_invoice_id':partner_invoice_id,
-                        'partner_shipping_id':partner_shipping_id
+                        'partner_shipping_id':partner_shipping_id,
+                        'shop_id':shop_id[0],
                     }
                     new_vals = vals.copy()
                     new_vals.update(update_vals)
