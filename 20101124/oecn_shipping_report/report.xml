@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report auto="False" id="oecn_shipping_list" model="sale.order" name="oecn.shipping.list" rml="oecn_shipping_report/shippinglist.rml" string="Shipping List"/>
+    </data>
+</openerp>
