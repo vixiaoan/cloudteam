@@ -26,7 +26,7 @@ from osv import fields, osv
 #    组织结构
 #----------------------------------------------------------
 
-def organizational_structure(osv.osv):
+class organizational_structure(osv.osv):
     _description = "组织结构"
     _name = "organizational.structure"
     _columns = {
@@ -36,12 +36,12 @@ def organizational_structure(osv.osv):
         'parent_left': fields.integer('Parent Left', select=1),
         'parent_right': fields.integer('Parent Right', select=1),
     }
-    
+organizational_structure()
 #----------------------------------------------------------
 #    报表类型
 #----------------------------------------------------------
 
-def report_type(osv.osv):
+class report_type(osv.osv):
     _description = "报表类型"
     _name = "report.type"
     _columns = {
@@ -49,12 +49,12 @@ def report_type(osv.osv):
         'name': fields.char('名字', size=128, required=True),
         #行格式 暂时不需要
     }
-
+report_type()
 #----------------------------------------------------------
 #    报表行
 #----------------------------------------------------------
     
-def report_line(osv.osv):
+class report_line(osv.osv):
     _description = "报表行"
     _name = "report.line"
     _columns = {
@@ -62,7 +62,25 @@ def report_line(osv.osv):
         'name': fields.char('名称', size=128, required=True),
         'line_number':fields.integer('行号'),
     }
-    
+report_line()
+
+#----------------------------------------------------------
+#    年
+#----------------------------------------------------------
+
+class report_fiscalyear(osv.osv):
+    _name = "report.fiscalyear"
+    _description = "年"
+    _columns = {
+        'name': fields.char('Fiscal Year', size=64, required=True),
+        'code': fields.char('Code', size=6, required=True),
+        'date_start': fields.date('Start Date', required=True),
+        'date_stop': fields.date('End Date', required=True),
+        'period_ids': fields.one2many('report.period', 'fiscalyear_id', 'Periods'),
+        'state': fields.selection([('draft','Draft'), ('done','Done')], 'Status', readonly=True),
+    }
+report_fiscalyear()
+
 #----------------------------------------------------------
 #    期间
 #----------------------------------------------------------
@@ -77,26 +95,28 @@ class report_period(osv.osv):
             help="These periods can overlap."),
         'date_start': fields.date('Start of Period', required=True, states={'done':[('readonly',True)]}),
         'date_stop': fields.date('End of Period', required=True, states={'done':[('readonly',True)]}),
-        'fiscalyear_id': fields.many2one('account.fiscalyear', 'Fiscal Year', required=True, states={'done':[('readonly',True)]}, select=True),
+        'fiscalyear_id': fields.many2one('report.fiscalyear', 'Fiscal Year', required=True, states={'done':[('readonly',True)]}, select=True),
         'state': fields.selection([('draft','Draft'), ('done','Done')], 'Status', readonly=True)
     }
+report_period()
 #----------------------------------------------------------
 #    报表
 #----------------------------------------------------------
 
-def report(osv.osv):
-    _description = "报表"
+class report(osv.osv):
     _name = "report"
+    _description = "报表"
     _columns = {
         'organizational_structure':fields.many2one('organizational.structure','组织结构'),
         'report_type':fields.many2one('report.type','报表类型'),
         'period':fields.many2one('report.period','期间'),
     }
+report()
 #----------------------------------------------------------
 #    报表明细
 #----------------------------------------------------------
 
-def report_detail(osv.osv):
+class report_detail(osv.osv):
     _description = "报表明细"
     _name = "report.detail"
     _columns = {
@@ -116,9 +136,4 @@ def report_detail(osv.osv):
         'last_year_balance_of_retained_earnings':fields.float('上年未分配利润'),
         'this_year_balance_of_retained_earnings':fields.float('本年未分配利润'),
     }
-    
-    
-    
-    
-    
-    
+report_detail()
