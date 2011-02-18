@@ -26,7 +26,7 @@
     "author" : "Joshua@OECN",
     "init_xml" : [],
     "demo_xml" : [],
-    "update_xml": [],
+    "update_xml": ['oecn_report_merge_view.xml'],
     "active": False,
     "installable": True
 }

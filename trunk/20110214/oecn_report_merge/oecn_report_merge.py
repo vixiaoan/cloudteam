@@ -99,6 +99,7 @@ class report_period(osv.osv):
         'state': fields.selection([('draft','Draft'), ('done','Done')], 'Status', readonly=True)
     }
 report_period()
+
 #----------------------------------------------------------
 #    报表
 #----------------------------------------------------------
@@ -112,6 +113,7 @@ class report(osv.osv):
         'period':fields.many2one('report.period','期间'),
     }
 report()
+
 #----------------------------------------------------------
 #    报表明细
 #----------------------------------------------------------

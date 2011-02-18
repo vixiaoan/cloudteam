@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+    <!--
+    组织结构
+    -->
+        <record id="view_organizational_structure_form" model="ir.ui.view">
+            <field name="name">organizational.structure.form</field>
+            <field name="model">organizational.structure</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                    <form string="organizational_structure">
+                        <field name="name" select="1"/>
+                        <field name="code" select="1"/>
+                        <field name="parent_id"/>
+                    </form>
+            </field>
+        </record>
+        <record id="view_organizational_structure_tree" model="ir.ui.view">
+            <field name="name">organizational.structure.tree</field>
+            <field name="model">organizational.structure</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="organizational_structure">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="parent_id"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_organizational_structure_form" model="ir.actions.act_window">
+            <field name="name">组织结构</field>
+            <field name="res_model">organizational.structure</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="menu_report" name="报表" />
+        <menuitem id="menu_report_config" name="报表定义" />
+        <menuitem action="action_organizational_structure_form" id="menu_action_organizational_structure_form"   parent="menu_report_config"/>
+        
+    <!--
+    报表类型
+    -->
+    <record id="view_report_type_form" model="ir.ui.view">
+            <field name="name">report.type.form</field>
+            <field name="model">report.type</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                    <form string="report_type">
+                        <field name="name" select="1"/>
+                        <field name="code" select="1"/>
+                    </form>
+            </field>
+        </record>
+        <record id="view_report_type_tree" model="ir.ui.view">
+            <field name="name">report.type.tree</field>
+            <field name="model">report.type</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="report_type">
+                    <field name="code"/>
+                    <field name="name"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_report_type_form" model="ir.actions.act_window">
+            <field name="name">报表类型</field>
+            <field name="res_model">report.type</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem action="action_report_type_form" id="menu_report_type_form"  parent="menu_report_config"/>
+
+    <!--
+    报表行
+    -->
+    
+    <record id="view_report_line_form" model="ir.ui.view">
+            <field name="name">report.line.form</field>
+            <field name="model">report.line</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                    <form string="report_line">
+                        <field name="name" select="1"/>
+                        <field name="report_type" select="1"/>
+                        <field name="line_number" select="1"/>
+                    </form>
+            </field>
+        </record>
+        <record id="view_report_line_tree" model="ir.ui.view">
+            <field name="name">report.line.tree</field>
+            <field name="model">report.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="report_line">
+                    <field name="name" />
+                    <field name="report_type"/>
+                    <field name="line_number" />
+                </tree>
+            </field>
+        </record>
+        <record id="action_report_line_form" model="ir.actions.act_window">
+            <field name="name">报表行</field>
+            <field name="res_model">report.line</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem action="action_report_line_form" id="menu_report_line_form"  parent="menu_report_config"/>
+     
+    <!--
+    报表
+    -->
+    
+    <record id="view_report_form" model="ir.ui.view">
+            <field name="name">report.form</field>
+            <field name="model">report</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                    <form string="report">
+                        <field name="organizational_structure" select="1"/>
+                        <field name="report_type" select="1"/>
+                        <field name="period" select="1"/>
+                    </form>
+            </field>
+        </record>
+        <record id="view_report_tree" model="ir.ui.view">
+            <field name="name">report.tree</field>
+            <field name="model">report</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="report">
+                    <field name="organizational_structure"/>
+                    <field name="report_type" />
+                    <field name="period" />
+                </tree>
+            </field>
+        </record>
+        <record id="action_report_form" model="ir.actions.act_window">
+            <field name="name">报表</field>
+            <field name="res_model">report</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem action="action_report_form" id="menu_report_form"  parent="menu_report_config"/>
+    <!--
+    报表明细
+    -->
+    
+        <record id="view_report_detail_form" model="ir.ui.view">
+            <field name="name">report.detail.form</field>
+            <field name="model">report.detail</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                    <form string="report_detail">
+                        <field name="report_line" select="1"/>
+                        <field name="beginning_balance" />
+                        <field name="ending_balance" />
+                        <field name="this_year_amount" />
+                        <field name="last_year_amount" />
+                        <field name="last_year_paid_up_capital" />
+                        <field name="this_year_paid_up_capital" />
+                        <field name="last_year_additional_paid_in_capital" />
+                        <field name="this_year_additional_paid_in_capital" />
+                        <field name="last_year_treasury_share" />
+                        <field name="this_year_treasury_share" />
+                        <field name="last_year_legal_reserve" />
+                        <field name="this_year_legal_reserve" />
+                        <field name="last_year_balance_of_retained_earnings" />
+                        <field name="this_year_balance_of_retained_earnings" />
+                    </form>
+            </field>
+        </record>
+        <record id="view_report_detail_tree" model="ir.ui.view">
+            <field name="name">report.detail.tree</field>
+            <field name="model">report.detail</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="report_detail">
+                        <field name="report_line" />
+                        <field name="beginning_balance" />
+                        <field name="ending_balance" />
+                        <field name="this_year_amount" />
+                        <field name="last_year_amount" />
+                        <field name="last_year_paid_up_capital" />
+                        <field name="this_year_paid_up_capital" />
+                        <field name="last_year_additional_paid_in_capital" />
+                        <field name="this_year_additional_paid_in_capital" />
+                        <field name="last_year_treasury_share" />
+                        <field name="this_year_treasury_share" />
+                        <field name="last_year_legal_reserve" />
+                        <field name="this_year_legal_reserve" />
+                        <field name="last_year_balance_of_retained_earnings" />
+                        <field name="this_year_balance_of_retained_earnings" />
+                </tree>
+            </field>
+        </record>
+        <record id="action_report_detail_form" model="ir.actions.act_window">
+            <field name="name">报表明细</field>
+            <field name="res_model">report.detail</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem action="action_report_detail_form" id="menu_report_detail_form"  parent="menu_report_config"/>
+    <!--
+    年
+    -->
+
+        <record id="view_report_fiscalyear_form" model="ir.ui.view">
+            <field name="name">report.fiscalyear.form</field>
+            <field name="model">report.fiscalyear</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Fiscalyear">
+                    <field name="name" select="1"/>
+                    <field name="code" select="1"/>
+                    <field name="date_start"/>
+                    <field name="date_stop"/>
+                    <separator colspan="4" string="Periods"/>
+                    <field colspan="4" name="period_ids" nolabel="1" widget="one2many_list">
+                        <form string="Period">
+                            <field name="name" select="1"/>
+                            <field name="code" select="1"/>
+                            <field name="date_start"/>
+                            <field name="date_stop"/>
+                            <field name="special"/>
+                        </form>
+                    </field>
+                    <separator colspan="4" string="States"/>
+                    <field name="state" select="1" readonly="1"/>
+                    <group col="2" colspan="2">
+                        <button name="create_period" states="draft" string="Create Monthly Periods" type="object"/>
+                        <button name="create_period3" states="draft" string="Create 3 Months Periods" type="object"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="view_report_fiscalyear_tree" model="ir.ui.view">
+            <field name="name">report.fiscalyear.tree</field>
+            <field name="model">report.fiscalyear</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Fiscalyear">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_report_fiscalyear_form" model="ir.actions.act_window">
+            <field name="name">年</field>
+            <field name="res_model">report.fiscalyear</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem id="fiscalyear_period" name="年与期间" parent="menu_report_config"/>
+        <menuitem action="action_report_fiscalyear_form" id="menu_action_report_fiscalyear_form" parent="fiscalyear_period"/>
+
+    <!--
+    期间
+    -->
+        <record id="res_role_period" model="res.roles">
+            <field eval="&quot;&quot;&quot;Period&quot;&quot;&quot;" name="name"/>
+        </record>
+
+        <record id="view_report_period_form" model="ir.ui.view">
+            <field name="name">report.period.form</field>
+            <field name="model">report.period</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Period">
+                    <field name="name" select="1"/>
+                    <field name="code" select="1"/>
+                    <field name="date_start"/>
+                    <field name="date_stop"/>
+                    <field name="fiscalyear_id"/>
+                    <field name="special"/>
+                    <separator colspan="4" string="States"/>
+                    <field name="state" select="1"/>
+                    <button name="action_draft" states="done" string="Set to Draft" type="object"/>
+                </form>
+            </field>
+        </record>
+        <record id="view_report_period_tree" model="ir.ui.view">
+            <field name="name">report.period.tree</field>
+            <field name="model">report.period</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="Period">
+                    <field name="code"/>
+                    <field name="name"/>
+                    <field name="date_start"/>
+                    <field name="date_stop"/>
+                    <field name="special"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+        <record id="action_report_period_form" model="ir.actions.act_window">
+            <field name="name">期间</field>
+            <field name="res_model">report.period</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+        <menuitem action="action_report_period_form" id="menu_action_report_period_form" parent="fiscalyear_period"/>
+    </data>
+</openerp>
