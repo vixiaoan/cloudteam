@@ -110,6 +110,7 @@ class report(osv.osv):
         'organizational_structure':fields.many2one('organizational.structure','组织结构'),
         'report_type':fields.many2one('report.type','报表类型'),
         'period':fields.many2one('report.period','期间'),
+        'report_detail':fields.one2many('report.detail','report_id','报表明细'),
     }
 report()
 
