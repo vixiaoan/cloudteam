@@ -117,9 +117,12 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                     <form string="report">
-                        <field name="organizational_structure" select="1"/>
-                        <field name="report_type" select="1"/>
-                        <field name="period" select="1"/>
+                        <group colspan="4" col="6">
+                        <field name="organizational_structure" select="1" />
+                        <field name="report_type" select="1" />
+                        <field name="period" select="1" />
+                        </group>
+                        <field name="report_detail" />
                     </form>
             </field>
         </record>
@@ -132,6 +135,7 @@
                     <field name="organizational_structure"/>
                     <field name="report_type" />
                     <field name="period" />
+                    <field name="report_detail" />
                 </tree>
             </field>
         </record>
