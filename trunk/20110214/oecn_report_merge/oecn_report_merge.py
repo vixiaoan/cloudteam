@@ -96,7 +96,6 @@ class report_period(osv.osv):
         'date_start': fields.date('Start of Period', required=True, states={'done':[('readonly',True)]}),
         'date_stop': fields.date('End of Period', required=True, states={'done':[('readonly',True)]}),
         'fiscalyear_id': fields.many2one('report.fiscalyear', 'Fiscal Year', required=True, states={'done':[('readonly',True)]}, select=True),
-        'state': fields.selection([('draft','Draft'), ('done','Done')], 'Status', readonly=True)
     }
 report_period()
 
@@ -122,6 +121,7 @@ class report_detail(osv.osv):
     _description = "报表明细"
     _name = "report.detail"
     _columns = {
+        'report_id':fields.many2one('report','报表'),
         'report_line':fields.many2one('report.line','报表行'),
         'beginning_balance':fields.float('年初金额'),
         'ending_balance':fields.float('期末金额'),
@@ -129,8 +129,8 @@ class report_detail(osv.osv):
         'last_year_amount':fields.float('上年金额'),
         'last_year_paid_up_capital':fields.float('上年实收资本'),
         'this_year_paid_up_capital':fields.float('本年实收资本'),
-        'last_year_additional_paid_in_capital':fields.float('上年实收资本'),
-        'this_year_additional_paid_in_capital':fields.float('本年实收资本'),
+        'last_year_additional_paid_in_capital':fields.float('上年资本公积'),
+        'this_year_additional_paid_in_capital':fields.float('本年资本公积'),
         'last_year_treasury_share':fields.float('上年库存股'),
         'this_year_treasury_share':fields.float('本年库存股'),
         'last_year_legal_reserve':fields.float('上年盈余公积'),

@@ -152,6 +152,7 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                     <form string="report_detail">
+                        <field name="report_id" select="1"/>
                         <field name="report_line" select="1"/>
                         <field name="beginning_balance" />
                         <field name="ending_balance" />
@@ -176,6 +177,7 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="report_detail">
+                        <field name="report_id" />
                         <field name="report_line" />
                         <field name="beginning_balance" />
                         <field name="ending_balance" />
@@ -222,15 +224,10 @@
                             <field name="code" select="1"/>
                             <field name="date_start"/>
                             <field name="date_stop"/>
-                            <field name="special"/>
                         </form>
                     </field>
                     <separator colspan="4" string="States"/>
                     <field name="state" select="1" readonly="1"/>
-                    <group col="2" colspan="2">
-                        <button name="create_period" states="draft" string="Create Monthly Periods" type="object"/>
-                        <button name="create_period3" states="draft" string="Create 3 Months Periods" type="object"/>
-                    </group>
                 </form>
             </field>
         </record>
@@ -273,10 +270,6 @@
                     <field name="date_start"/>
                     <field name="date_stop"/>
                     <field name="fiscalyear_id"/>
-                    <field name="special"/>
-                    <separator colspan="4" string="States"/>
-                    <field name="state" select="1"/>
-                    <button name="action_draft" states="done" string="Set to Draft" type="object"/>
                 </form>
             </field>
         </record>
@@ -290,8 +283,6 @@
                     <field name="name"/>
                     <field name="date_start"/>
                     <field name="date_stop"/>
-                    <field name="special"/>
-                    <field name="state"/>
                 </tree>
             </field>
         </record>
