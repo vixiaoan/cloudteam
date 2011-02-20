@@ -192,7 +192,7 @@
             <field name="model">report.detail</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree  editable="top" on_write="_on_create_write" string="report_detail">
+                <tree  editable="top"  string="report_detail">
                         <field name="report_line" />
                         <field name="beginning_balance" />
                         <field name="ending_balance" />
