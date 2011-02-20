@@ -156,14 +156,10 @@
                 </tree>
             </field>
         </record>
-        <record id="action_report_form" model="ir.actions.act_window">
-            <field name="name">报表</field>
-            <field name="res_model">report</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-        <menuitem action="action_report_form" id="menu_report_form"  parent="menu_report_config"/>
-    <!--
+        <wizard id="action_report_form" menu="False" model="report.detail" name="report.move" string="报表"/>
+        <menuitem icon="STOCK_JUSTIFY_FILL" action="action_report_form" id="menu_report_form"
+        parent="menu_report_config" type="wizard" sequence="5"/>
+   <!--
     报表明细
     -->
     
@@ -172,8 +168,7 @@
             <field name="model">report.detail</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="report_detail">
-                    <field name="report_id" select="1"/>
+                <form string="report_detail" >
                     <field name="report_line" select="1"/>
                     <field name="beginning_balance" />
                     <field name="ending_balance" />
@@ -197,7 +192,7 @@
             <field name="model">report.detail</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree string="report_detail">
+                <tree  editable="top" on_write="_on_create_write" string="report_detail">
                         <field name="report_line" />
                         <field name="beginning_balance" />
                         <field name="ending_balance" />
