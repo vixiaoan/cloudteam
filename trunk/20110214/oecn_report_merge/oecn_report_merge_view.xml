@@ -107,68 +107,20 @@
         </record>
         <menuitem action="action_report_line_form" id="menu_report_line_form"  parent="menu_report_config"/>
      
-    <!--
-    报表
-    -->
-    
-    <record id="view_report_form" model="ir.ui.view">
-            <field name="name">report.form</field>
-            <field name="model">report</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-                    <form string="report">
-                        <group colspan="3" col="6">
-                        <field name="organizational_structure" select="1" />
-                        <field name="report_type" select="1" />
-                        <field name="period" select="1" />
-                        </group>
-                        <field colspan="4" name="report_detail_ids" nolabel="1" widget="one2many_list">
-                            <form string="report_detail">
-                                <field name="report_line" select="1"/>
-                                <field name="beginning_balance" />
-                                <field name="ending_balance" />
-                                <field name="this_year_amount" />
-                                <field name="last_year_amount" />
-                                <field name="last_year_paid_up_capital" />
-                                <field name="this_year_paid_up_capital" />
-                                <field name="last_year_additional_paid_in_capital" />
-                                <field name="this_year_additional_paid_in_capital" />
-                                <field name="last_year_treasury_share" />
-                                <field name="this_year_treasury_share" />
-                                <field name="last_year_legal_reserve" />
-                                <field name="this_year_legal_reserve" />
-                                <field name="last_year_balance_of_retained_earnings" />
-                                <field name="this_year_balance_of_retained_earnings" />
-                            </form>
-                        </field>
-                    </form>
-            </field>
-        </record>
-        <record id="view_report_tree" model="ir.ui.view">
-            <field name="name">report.tree</field>
-            <field name="model">report</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <tree string="report">
-                    <field name="organizational_structure"/>
-                    <field name="report_type" />
-                    <field name="period" />
-                </tree>
-            </field>
-        </record>
-        <wizard id="action_report_form" menu="False" model="report.detail" name="report.move" string="报表"/>
-        <menuitem icon="STOCK_JUSTIFY_FILL" action="action_report_form" id="menu_report_form"
-        parent="menu_report_config" type="wizard" sequence="5"/>
+
    <!--
     报表明细
     -->
     
-        <record id="view_report_detail_form" model="ir.ui.view">
-            <field name="name">report.detail.form</field>
-            <field name="model">report.detail</field>
+        <record id="view_report_form" model="ir.ui.view">
+            <field name="name">report.form</field>
+            <field name="model">report</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                <form string="report_detail" >
+                <form string="report" >
+                    <field name="organizational_structure" select="1"/>
+                    <field name="report_type" select="1"/>
+                    <field name="period" select="1"/>
                     <field name="report_line" select="1"/>
                     <field name="beginning_balance" />
                     <field name="ending_balance" />
@@ -187,12 +139,12 @@
                 </form>
             </field>
         </record>
-        <record id="view_report_detail_tree" model="ir.ui.view">
-            <field name="name">report.detail.tree</field>
-            <field name="model">report.detail</field>
+        <record id="view_report_tree" model="ir.ui.view">
+            <field name="name">report.tree</field>
+            <field name="model">report</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree  editable="top"  string="report_detail">
+                <tree  editable="top"  string="report">
                         <field name="report_line" />
                         <field name="beginning_balance" />
                         <field name="ending_balance" />
@@ -208,16 +160,15 @@
                         <field name="this_year_legal_reserve" />
                         <field name="last_year_balance_of_retained_earnings" />
                         <field name="this_year_balance_of_retained_earnings" />
+                        <field name="organizational_structure" select="1"/>
+                        <field name="report_type" select="1"/>
+                        <field name="period" select="1"/>
                 </tree>
             </field>
         </record>
-        <record id="action_report_detail_form" model="ir.actions.act_window">
-            <field name="name">报表明细</field>
-            <field name="res_model">report.detail</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-        <menuitem action="action_report_detail_form" id="menu_report_detail_form"  parent="menu_report_config"/>
+        <wizard id="action_report_form" menu="False" model="report" name="report.move" string="报表"/>
+        <menuitem icon="STOCK_JUSTIFY_FILL" action="action_report_form" id="menu_report_form"
+        parent="menu_report_config" type="wizard" sequence="5"/>
     <!--
     年
     -->

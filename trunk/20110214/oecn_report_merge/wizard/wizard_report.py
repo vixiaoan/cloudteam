@@ -25,6 +25,7 @@ import wizard
 from osv import osv
 import pooler
 from tools.translate import _
+import netsvc
 
 _report_form = '''<?xml version="1.0"?>
 <form string="请选择">
@@ -52,15 +53,25 @@ _report_fields = {
 
 def _action_open_window(self, cr, uid, data, context):
     form = data['form']
-    cr.execute('select id,name from ir_ui_view where model=%s and type=%s', ('report.detail', 'tree'))
+    cr.execute('select id,name from ir_ui_view where model=%s and type=%s', ('report', 'tree'))
     view_res = cr.fetchone()
+    
+    r =  pooler.get_pool(cr.dbname).get('report')
+    report_ids = r.search(cr, uid , [('organizational_structure','=',form['organizational_structure']), ('report_type','=',form['report_type']),('period','=',form['period'])])
+    if not len(report_ids):
+    #如果不存在报表的记录,则根据报表类型找出相应的报表行
+        rl = pooler.get_pool(cr.dbname).get('report.line')
+        report_line_ids = rl.search(cr, uid, [('report_type','=',form['report_type'])])
+        
+        for report_line_id in report_line_ids:
+            r.create(cr, uid, {'organizational_structure':form['organizational_structure'], 'report_type': form['report_type'],'period':form['period'],'report_line':report_line_id})
     return {
-        'domain': "[('report_id.organizational_structure','=',%d), ('report_id.report_type','=',%d),('report_id.period','=',%d)]" % (form['organizational_structure'],form['report_type'],form['period']),
+        'domain': "[('organizational_structure','=',%d), ('report_type','=',%d),('period','=',%d)]" % (form['organizational_structure'],form['report_type'],form['period']),
         'view_type': 'form',
         'view_mode': 'tree,form',
-        'res_model': 'report.detail',
+        'res_model': 'report',
         'view_id': view_res,
-        'context': "{'report_id.organizational_structure':%d, 'report_id.report_type':%d, 'report_id.period':%d}" % (form['organizational_structure'],form['report_type'] ,form['period']),
+        'context': "{'organizational_structure':%d, 'report_type':%d, 'period':%d}" % (form['organizational_structure'],form['report_type'] ,form['period']),
         'type': 'ir.actions.act_window'
     }
 
