@@ -104,26 +104,13 @@ report_period()
 #----------------------------------------------------------
 
 class report(osv.osv):
-    _name = "report"
     _description = "报表"
+    _name = "report"
     _columns = {
-        'organizational_structure':fields.many2one('organizational.structure','组织结构'),
-        'report_type':fields.many2one('report.type','报表类型'),
-        'period':fields.many2one('report.period','期间'),
-        'report_detail_ids':fields.one2many('report.detail','report_id','报表明细'),
-    }
-report()
-
-#----------------------------------------------------------
-#    报表明细
-#----------------------------------------------------------
-
-class report_detail(osv.osv):
-    _description = "报表明细"
-    _name = "report.detail"
-    _columns = {
-        'report_id':fields.many2one('report','报表'),
-        'report_line':fields.many2one('report.line','报表行'),
+        'organizational_structure':fields.many2one('organizational.structure','组织结构',required=True),
+        'report_type':fields.many2one('report.type','报表类型',required=True),
+        'period':fields.many2one('report.period','期间',required=True),
+        'report_line':fields.many2one('report.line','报表行',required=True),
         'beginning_balance':fields.float('年初金额'),
         'ending_balance':fields.float('期末金额'),
         'this_year_amount':fields.float('本年金额'),
@@ -139,4 +126,4 @@ class report_detail(osv.osv):
         'last_year_balance_of_retained_earnings':fields.float('上年未分配利润'),
         'this_year_balance_of_retained_earnings':fields.float('本年未分配利润'),
     }
-report_detail()
+report()
