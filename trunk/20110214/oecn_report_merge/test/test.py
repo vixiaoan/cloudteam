@@ -26,12 +26,14 @@ DB = 'orm'
 USERID = 1
 #密码
 USERPASS = 'admin'
-cteate_obj={
-'company': 1,'report_type':1,'year':1,'month':1,'row':2,'column':2,'text':'22222','value':'1212121212'
-}
+rows=['1','1','1']
+columns=['1','1','1']
+texts=['text1','text2','text3']
+values=['111','222','333']
+
 sock = xmlrpclib.ServerProxy('http://%s:%s/xmlrpc/object' % ('localhost',8069))
 
-res = sock.execute(DB, USERID, USERPASS, 'report.data','set_report_data',1,1,1,'1','2','2','2222','12121')
+res = sock.execute(DB, USERID, USERPASS, 'report.data','set_report_data',1,1,1,'1',rows,columns,texts,values)
 res = sock.execute(DB, USERID, USERPASS, 'report.data', 'get_report_data',1,1,1,1)
 
 print res
