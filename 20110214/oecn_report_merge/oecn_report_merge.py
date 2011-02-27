@@ -106,18 +106,22 @@ class report_data(osv.osv):
     
     def get_report_data(self, cr, uid, comapny, report_type, year,month):
         """
-        传入company,report_type,year,month 传出id,row,column,text,value五列的list
+        传入company,report_type,year,month 传出row,column,text,value四列的list
         """
         report_data_ids = self.pool.get('report.data').search(cr, uid , [('report_company','=',comapny), ('report_type','=',report_type),('year','=',year),('month','=',month)])
         report_deta_objs = self.pool.get('report.data').read(cr, uid ,report_data_ids,['report_data_id','row','column','text','value'])
+        #不输出ID
+        for report_deta_obj in report_deta_objs:
+            del report_deta_obj['id']
         return report_deta_objs
     
-    def set_report_data(self, cr, uid,company,report_type,year,month,row,column,text,value):
+    def set_report_data(self, cr, uid,company,report_type,year,month,rows=[],columns=[],texts=[],values=[]):
         """
-        传入company,report_type,year,month，row,column,text,value九列的list，传出成功或失败的信息
+        传入company,report_type,year,month，还有row,column,text,value四列的list，传出成功或失败的信息
         """
         res = False
-        id  = self.pool.get('report.data').create(cr, uid, {'report_company': company,'report_type':report_type,'year':year,'month':month,'row':row,'column':column,'text':text,'value':value})
+        for i in range(0,len(rows)):
+            id  = self.pool.get('report.data').create(cr, uid, {'report_company': company,'report_type':report_type,'year':year,'month':month,'row':rows[i],'column':columns[i],'text':texts[i],'value':values[i]})
         if id:
             res = True
         return res
