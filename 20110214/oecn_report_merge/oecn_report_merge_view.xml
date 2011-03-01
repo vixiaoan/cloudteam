@@ -49,6 +49,14 @@
                     <form string="report_type">
                         <field name="name" select="1"/>
                         <field name="code" select="1"/>
+                        <field colspan="4" name="report_format" nolabel="1" widget="one2many_list">
+                            <form string="report_format">
+                                <field name="row" />
+                                <field name="column" />
+                                <field name="text" />
+                                <field name="value" />
+                            </form>
+                        </field>
                     </form>
             </field>
         </record>
@@ -81,8 +89,6 @@
             <field name="type">form</field>
             <field name="arch" type="xml">
                     <form string="report_format">
-                        <field name="name" />
-                        <field name="report_type"/>
                         <field name="row" />
                         <field name="column" />
                         <field name="text" />
@@ -96,8 +102,6 @@
             <field name="type">tree</field>
             <field name="arch" type="xml">
                 <tree string="report_format">
-                    <field name="name" />
-                    <field name="report_type"/>
                     <field name="row" />
                     <field name="column" />
                     <field name="text" />
@@ -105,14 +109,6 @@
                 </tree>
             </field>
         </record>
-        <record id="action_report_format_form" model="ir.actions.act_window">
-            <field name="name">报表格式</field>
-            <field name="res_model">report.format</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-        <menuitem action="action_report_format_form" id="menu_report_format_form"  parent="menu_report_config"/>
-     
 
    <!--
     报表数据
@@ -159,39 +155,7 @@
             <field name="view_mode">tree,form</field>
         </record>
         <menuitem  action="action_report_data_form" id="menu_report_data_form"
-        parent="menu_report_config" />
-    <!--
-    年
-    -->
-
-        <record id="view_report_fiscalyear_form" model="ir.ui.view">
-            <field name="name">report.fiscalyear.form</field>
-            <field name="model">report.fiscalyear</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-                <form string="Fiscalyear">
-                    <field name="name" select="1"/>
-                    <field name="code" select="1"/>
-                </form>
-            </field>
-        </record>
-        <record id="view_report_fiscalyear_tree" model="ir.ui.view">
-            <field name="name">report.fiscalyear.tree</field>
-            <field name="model">report.fiscalyear</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <tree string="Fiscalyear">
-                    <field name="code"/>
-                    <field name="name"/>
-                </tree>
-            </field>
-        </record>
-        <record id="action_report_fiscalyear_form" model="ir.actions.act_window">
-            <field name="name">年</field>
-            <field name="res_model">report.fiscalyear</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-        <menuitem action="action_report_fiscalyear_form" id="meun_fiscalyear_period" name="年" parent="menu_report_config"/>
+        parent="menu_report" />
+        
     </data>
 </openerp>
