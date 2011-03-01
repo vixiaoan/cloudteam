@@ -104,24 +104,64 @@ class report_data(osv.osv):
         'value':fields.float('数值'),
     }
     
-    def get_report_data(self, cr, uid, comapny, report_type, year,month):
+    def check_input(self, cr, uid, comapny, report_type, year, month):
         """
-        传入company,report_type,year,month 传出row,column,text,value四列的list
+        验证输入数据是否合法,合法则返回相应ID
         """
-        report_data_ids = self.pool.get('report.data').search(cr, uid , [('report_company','=',comapny), ('report_type','=',report_type),('year','=',year),('month','=',month)])
-        report_deta_objs = self.pool.get('report.data').read(cr, uid ,report_data_ids,['report_data_id','row','column','text','value'])
+        msg=''
+        company_id = self.pool.get('report.company').search(cr, uid ,[('name','=',comapny)])
+        if not company_id:
+            msg = 'company'
+        report_type_id = self.pool.get('report.type').search(cr, uid ,[('name','=',report_type)])
+        if not report_type_id:
+            msg = msg + ' report_type'
+        year_id = self.pool.get('report.fiscalyear').search(cr, uid ,[('name','=',year)])
+        if not year_id:
+            msg = msg + ' year'
+        try:
+            int(month)
+            if not 0 < int(month) < 13:
+                msg = msg + ' month'
+        except ValueError:
+            msg = msg + ' month'
+        if len(msg):
+            msg = msg + ' error!'
+        return {
+            'company_id':company_id,
+            'report_type_id':report_type_id,
+            'year_id':year_id,
+            'month':month,
+            'msg':msg,
+            }
+    
+    def get_report_data(self, cr, uid, company, report_type, year, month):
+        """
+        传入 company,report_type,year,month 传出row,column,text,value四列的list
+        """
+        #验证输入数据是否合法
+        result = {}
+        result = self.check_input( cr, uid, company, report_type, year, month)
+        if len(result['msg']):
+            return result['msg']
+        report_data_ids = self.pool.get('report.data').search(cr, uid , [('report_company','=',result['company_id']), ('report_type','=',result['report_type_id']),('year','=',result['year_id']),('month','=',result['month'])])
+        report_deta_objs = self.pool.get('report.data').read(cr, uid ,report_data_ids,['row','column','text','value'])
         #不输出ID
         for report_deta_obj in report_deta_objs:
             del report_deta_obj['id']
         return report_deta_objs
     
-    def set_report_data(self, cr, uid,company,report_type,year,month,rows=[],columns=[],texts=[],values=[]):
+    def set_report_data(self, cr, uid,company,report_type,year,month,report_deta_objs):
         """
-        传入company,report_type,year,month，还有row,column,text,value四列的list，传出成功或失败的信息
+        传入company,report_type,year,month，还有report_deta_objs是包含row,column,text,value四列的list，传出成功或失败的信息
         """
         res = False
-        for i in range(0,len(rows)):
-            id  = self.pool.get('report.data').create(cr, uid, {'report_company': company,'report_type':report_type,'year':year,'month':month,'row':rows[i],'column':columns[i],'text':texts[i],'value':values[i]})
+        #验证输入数据是否合法
+        result = {}
+        result = self.check_input(cr, uid, company, report_type, year, month)
+        if len(result['msg']):
+            return result['msg']
+        for i in range(0,len(report_deta_objs)):
+            id  = self.pool.get('report.data').create(cr, uid, {'report_company': result['company_id'][0],'report_type':result['report_type_id'][0],'year':result['year_id'][0],'month':result['month'][0],'row':report_deta_objs[i]['row'],'column':report_deta_objs[i]['column'],'text':report_deta_objs[i]['text'],'value':report_deta_objs[i]['value']})
         if id:
             res = True
         return res
