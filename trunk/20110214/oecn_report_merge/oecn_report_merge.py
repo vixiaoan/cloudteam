@@ -41,20 +41,6 @@ class report_company(osv.osv):
 report_company()
 
 #----------------------------------------------------------
-#    年
-#----------------------------------------------------------
-
-class report_fiscalyear(osv.osv):
-    _name = "report.fiscalyear"
-    _description = "年"
-    _columns = {
-        'name': fields.char('Fiscal Year', size=64, required=True),
-        'code': fields.char('Code', size=6, required=True),
-    }
-report_fiscalyear()
-
-
-#----------------------------------------------------------
 #    报表类型
 #----------------------------------------------------------
 
@@ -64,6 +50,7 @@ class report_type(osv.osv):
     _columns = {
         'code': fields.char('编号', size=64, required=True),
         'name': fields.char('名字', size=128, required=True),
+        'report_format': fields.one2many('report.format','report_type','报表格式')
     }
 report_type()
 
@@ -72,15 +59,14 @@ report_type()
 #----------------------------------------------------------
     
 class report_format(osv.osv):
-    _description = "报表行"
+    _description = "报表格式"
     _name = "report.format"
     _columns = {
-        'name': fields.char('名称', size=128, required=True),
         'report_type':fields.many2one('report.type','报表类型'),
-        'row':fields.integer('行号'),
-        'column':fields.integer('列号'),
-        'text':fields.char('文本',size=128),
-        'value':fields.float('数值'),
+        'row':fields.char('行号',size=25,required=True),
+        'column':fields.char('列号',size=25,required=True),
+        'text':fields.char('文本',size=128,required=True),
+        'value':fields.float('数值',required=True),
     }
 report_format()
 
@@ -96,10 +82,10 @@ class report_data(osv.osv):
     _columns = {
         'report_company':fields.many2one('report.company','组织结构',required=True),
         'report_type':fields.many2one('report.type','报表类型',required=True),
-        'year':fields.many2one('report.fiscalyear','年',required=True),
+        'year':fields.char('年',required=True,size=10),
         'month':fields.selection([('1','1'),('2','2'),('3','3'),('4','4'),('5','5'),('6','6'),('7','7'),('8','8'),('9','9'),('10','10'),('11','11'),('12','12')],'月份',required=True),
-        'row':fields.integer('行号'),
-        'column':fields.integer('列号'),
+        'row':fields.char('行号',size=25),
+        'column':fields.char('列号',size=25),
         'text':fields.char('文本',size=128),
         'value':fields.float('数值'),
     }
@@ -115,8 +101,9 @@ class report_data(osv.osv):
         report_type_id = self.pool.get('report.type').search(cr, uid ,[('name','=',report_type)])
         if not report_type_id:
             msg = msg + ' report_type'
-        year_id = self.pool.get('report.fiscalyear').search(cr, uid ,[('name','=',year)])
-        if not year_id:
+        try:
+            int(year)
+        except ValueError:
             msg = msg + ' year'
         try:
             int(month)
@@ -129,7 +116,7 @@ class report_data(osv.osv):
         return {
             'company_id':company_id,
             'report_type_id':report_type_id,
-            'year_id':year_id,
+            'year':year,
             'month':month,
             'msg':msg,
             }
@@ -143,7 +130,7 @@ class report_data(osv.osv):
         result = self.check_input( cr, uid, company, report_type, year, month)
         if len(result['msg']):
             return result['msg']
-        report_data_ids = self.pool.get('report.data').search(cr, uid , [('report_company','=',result['company_id']), ('report_type','=',result['report_type_id']),('year','=',result['year_id']),('month','=',result['month'])])
+        report_data_ids = self.pool.get('report.data').search(cr, uid , [('report_company','=',result['company_id']), ('report_type','=',result['report_type_id']),('year','=',result['year']),('month','=',result['month'])])
         report_deta_objs = self.pool.get('report.data').read(cr, uid ,report_data_ids,['row','column','text','value'])
         #不输出ID
         for report_deta_obj in report_deta_objs:
@@ -161,7 +148,7 @@ class report_data(osv.osv):
         if len(result['msg']):
             return result['msg']
         for i in range(0,len(report_deta_objs)):
-            id  = self.pool.get('report.data').create(cr, uid, {'report_company': result['company_id'][0],'report_type':result['report_type_id'][0],'year':result['year_id'][0],'month':result['month'][0],'row':report_deta_objs[i]['row'],'column':report_deta_objs[i]['column'],'text':report_deta_objs[i]['text'],'value':report_deta_objs[i]['value']})
+            id  = self.pool.get('report.data').create(cr, uid, {'report_company': result['company_id'][0],'report_type':result['report_type_id'][0],'year':result['year'],'month':result['month'],'row':report_deta_objs[i]['row'],'column':report_deta_objs[i]['column'],'text':report_deta_objs[i]['text'],'value':report_deta_objs[i]['value']})
         if id:
             res = True
         return res
