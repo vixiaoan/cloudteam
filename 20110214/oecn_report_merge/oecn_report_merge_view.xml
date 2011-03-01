@@ -128,7 +128,6 @@
                     <field name="report_type" select="1"/>
                     <field name="year" select="1"/>
                     <field name="month" select="1"/>
-                    <field name="report_format" select="1"/>
                     <field name="row" />
                     <field name="column" />
                     <field name="text" />
@@ -146,7 +145,6 @@
                     <field name="report_type" select="1"/>
                     <field name="year" select="1"/>
                     <field name="month" select="1"/>
-                    <field name="report_format" select="1"/>
                     <field name="row" />
                     <field name="column" />
                     <field name="text" />

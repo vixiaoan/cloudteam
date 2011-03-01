@@ -26,14 +26,12 @@ DB = 'orm'
 USERID = 1
 #密码
 USERPASS = 'admin'
-rows=['1','1','1']
-columns=['1','1','1']
-texts=['text1','text2','text3']
-values=['111','222','333']
+res = ''
+report_data_obj = [{'column': 1, 'text': 'obj1', 'value': 111.0, 'row': 1}, {'column': 1, 'text': 'obj', 'value': 222.0, 'row': 1}]
 
 sock = xmlrpclib.ServerProxy('http://%s:%s/xmlrpc/object' % ('localhost',8069))
+res1 = sock.execute(DB, USERID, USERPASS, 'report.data','set_report_data','公司1','类型1','2011','1',report_data_obj)
+res2 = sock.execute(DB, USERID, USERPASS, 'report.data', 'get_report_data','公司1','类型1','2011','1')
+print res1
+print res2
 
-res = sock.execute(DB, USERID, USERPASS, 'report.data','set_report_data',1,1,1,'1',rows,columns,texts,values)
-res = sock.execute(DB, USERID, USERPASS, 'report.data', 'get_report_data',1,1,1,1)
-
-print res
