@@ -65,8 +65,8 @@ class report_format(osv.osv):
         'report_type':fields.many2one('report.type','报表类型'),
         'row':fields.char('行号',size=25,required=True),
         'column':fields.char('列号',size=25,required=True),
-        'text':fields.char('文本',size=128,required=True),
-        'value':fields.float('数值',required=True),
+        'text':fields.char('文本',size=128),
+        'value':fields.float('数值'),
     }
 report_format()
 
@@ -82,10 +82,10 @@ class report_data(osv.osv):
     _columns = {
         'report_company':fields.many2one('report.company','组织结构',required=True),
         'report_type':fields.many2one('report.type','报表类型',required=True),
-        'year':fields.char('年',required=True,size=10),
+        'year':fields.char('年',size=10,required=True),
         'month':fields.selection([('1','1'),('2','2'),('3','3'),('4','4'),('5','5'),('6','6'),('7','7'),('8','8'),('9','9'),('10','10'),('11','11'),('12','12')],'月份',required=True),
-        'row':fields.char('行号',size=25),
-        'column':fields.char('列号',size=25),
+        'row':fields.char('行号',size=25,required=True),
+        'column':fields.char('列号',size=25,required=True),
         'text':fields.char('文本',size=128),
         'value':fields.float('数值'),
     }
