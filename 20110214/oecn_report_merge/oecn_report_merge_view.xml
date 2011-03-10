@@ -157,5 +157,8 @@
         <menuitem  action="action_report_data_form" id="menu_report_data_form"
         parent="menu_report" />
         
+        <wizard id="wiz_action_report_grid" menu="False" model="report.data.grid" name="report.data.grid" string="报表表格"/>
+        <menuitem icon="STOCK_JUSTIFY_FILL" action="wiz_action_report_grid" id="menu_report_form"
+        parent="menu_report" type="wizard" sequence="5"/>
     </data>
 </openerp>
