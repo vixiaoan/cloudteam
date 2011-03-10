@@ -89,6 +89,7 @@ class report_data(osv.osv):
         'text':fields.char('文本',size=128),
         'value':fields.float('数值'),
     }
+    _rec_name = 'report_company'
     
     def check_input(self, cr, uid, comapny, report_type, year, month):
         """
@@ -152,4 +153,84 @@ class report_data(osv.osv):
         if id:
             res = True
         return res
+        
+
 report_data()
+
+#----------------------------------------------------------
+#    报表数据表格
+#----------------------------------------------------------
+
+class report_data_grid(osv.osv):
+    _name = 'report.data.grid'
+    _description = 'Report Data Grid'
+    _inherit='report.data'
+    _table = 'report_data'
+    
+    def create(self, cr, uid, vals, cotext=None):
+        raise osv.except_osv('Error !','You cannot add an entry to this view!')
+    
+    def unlink(self, *args, **argv):
+        raise osv.except_osv('Error !', 'You cannot delete an entry of this view !')
+    
+    def write(self, cr, uid, ids, vals, context=None):
+        raise osv.except_osv('Error !', 'You cannot write an entry of this view !')
+    
+    def read(self, cr, uid, ids, fields=None, context=None, load='_classic_read'):
+        logger = netsvc.Logger()
+        cr.execute("SELECT DISTINCT  cast(row as int) FROM report_data WHERE report_company='%s' and report_type='%s' and year = '%s' and month = '%s'  order by cast(row as int) "%(context['report_company'], context['report_type'],context['year'],context['month']))
+        rows = cr.dictfetchall()
+        cr.execute('''SELECT DISTINCT  "column" FROM report_data WHERE report_company='%s' and report_type='%s' and year = '%s' and month = '%s'  order by "column" '''%(context['report_company'], context['report_type'],context['year'],context['month']))
+        columns = cr.dictfetchall()
+        if not isinstance(rows,list):
+            rows=[rows]
+        for row in rows:
+            for column in columns:
+                text_value_id = self.pool.get('report.data').search(cr, uid, [('report_company', '=', context['report_company']),('report_type', '=',  context['report_type']),('year', '=', context['year']),('month', '=', context['month']),('column', '=', column['column']),('row', '=', row['row'])])
+                text_value = self.pool.get('report.data').read(cr, uid,text_value_id,['text','value','id'])
+                if text_value:
+                 #如果text或者value存在即赋值
+                    if text_value[0]['value']:
+                        row['column_'+str(column['column'])] =  text_value[0]['value']
+                    elif text_value[0]['text']:
+                        row['column_'+str(column['column'])] =  text_value[0]['text']
+                    else:
+                        row['column_'+str(column['column'])] = ''
+                    row['id'] = text_value[0]['id']
+            row['line_num'] = str(row['row'])
+        logger.notifyChannel('addon:'+self._name,netsvc.LOG_INFO,'rows:%s'%(rows))
+        return rows
+        
+    def fields_get(self, cr, uid, fields=None, context=None, read_access=True):
+        result = super(report_data_grid, self).fields_get(cr, uid, fields, context)
+        if context.get('report_company',False):
+            cr.execute('''SELECT DISTINCT  "column" FROM report_data WHERE report_company='%s' and report_type='%s' and year = '%s' and month = '%s'  order by "column" '''%(context['report_company'], context['report_type'],context['year'],context['month']))
+            columns = cr.dictfetchall()
+            result['line_num'] = {'string': '行号/列号','type': 'char','size': 7}
+            for column in columns:
+                result['column_'+str(column['column'])] = {'string': '%s'%column['column'],'type': 'char','size': 7}
+        return result
+        
+    def fields_view_get(self, cr, uid, view_id=None,view_type='form',context={},toolbar=False):
+        logger = netsvc.Logger()
+        logger.notifyChannel('addon:'+self._name,netsvc.LOG_INFO,'context_get:%s'%(context))
+        result = super(report_data_grid, self).fields_view_get(cr, uid, view_id, view_type, context=context, toolbar=toolbar)
+        if context.get('report_company',False):
+            cr.execute('''SELECT DISTINCT  "column" FROM report_data WHERE report_company='%s' and report_type='%s' and year = '%s' and month = '%s'  order by "column" '''%(context['report_company'], context['report_type'],context['year'],context['month']))
+            columns = cr.dictfetchall()
+            if not columns:
+                raise osv.except_osv('Error !','No data!')
+            xml = '''<?xml version="1.0"?>
+            <%s editable="bottom">
+            <field name="line_num"/>
+        ''' % (view_type,)
+            for column in columns:
+                #logger.notifyChannel('addon:'+self._name,netsvc.LOG_INFO,'_columns:%s'%(columns))
+                xml +='''<field name="column_%s"/>'''%(str(column['column']))
+            xml += '''</%s>'''% (view_type,)
+            result['arch'] = xml
+            result['fields'] = self.fields_get(cr, uid,'line',context = context)
+            
+        logger.notifyChannel('addon:'+self._name,netsvc.LOG_INFO,'fields_view_get_result:%s'%(result))
+        return result
+report_data_grid()

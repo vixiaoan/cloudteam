@@ -20,5 +20,4 @@
 #    author:Joshua  
 ##############################################################################
 
-import oecn_report_merge
-import wizard
+import wizard_report_grid

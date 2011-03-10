@@ -27,8 +27,10 @@ USERID = 1
 #密码
 USERPASS = 'admin'
 res = ''
-report_data_obj = [{'column': 1, 'text': 'obj1', 'value': 111.0, 'row': 1}, {'column': 1, 'text': 'obj', 'value': 222.0, 'row': 1}]
-
+report_data_obj = [
+{'column': 1, 'text': 'obj1', 'value': 111.0, 'row': 1}, 
+{'column': 1, 'text': 'obj', 'value': 222.0, 'row': 1}
+]
 sock = xmlrpclib.ServerProxy('http://%s:%s/xmlrpc/object' % ('localhost',8069))
 res1 = sock.execute(DB, USERID, USERPASS, 'report.data','set_report_data','公司1','类型1','2011','1',report_data_obj)
 res2 = sock.execute(DB, USERID, USERPASS, 'report.data', 'get_report_data','公司1','类型1','2011','1')
