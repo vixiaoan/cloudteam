@@ -234,3 +234,49 @@ class report_data_grid(osv.osv):
         logger.notifyChannel('addon:'+self._name,netsvc.LOG_INFO,'fields_view_get_result:%s'%(result))
         return result
 report_data_grid()
+
+#----------------------------------------------------------
+#    合并项目
+#----------------------------------------------------------
+class merge_entry(osv.osv):
+    _description = '合并项目'
+    _name = 'merge.entry'
+    _columns = {
+        'name': fields.char('名字', size=128, required=True),
+        'active': fields.boolean('Active'),
+        'report_type':fields.many2one('report.type','报表类型',required=True),
+        'row':fields.char('行号',size=25,required=True),
+        'column':fields.char('列号',size=25,required=True),
+    }
+merge_entry()
+
+#----------------------------------------------------------
+#    抵消分录
+#----------------------------------------------------------
+class report_offsetting_entry(osv.osv):
+    _description = "抵消分录"
+    _name = "report.offsetting_entry"
+    _columns = {
+        'code': fields.char('编号', size=64, required=True),
+        'year':fields.char('年',size=10,required=True),
+        'month':fields.selection([('1','1'),('2','2'),('3','3'),('4','4'),('5','5'),('6','6'),('7','7'),('8','8'),('9','9'),('10','10'),('11','11'),('12','12')],'月份',required=True),
+        'report_company':fields.many2one('report.company','公司',required=True),
+        'line_ids':fields.one2many('report.offsetting_entry.line','offsetting_entry_line','报表格式'),
+        'create_uid': fields.many2one('res.users', 'Created by', readonly=True),
+        'create_date': fields.date('Creation date', readonly=True),
+    }
+report_offsetting_entry()
+
+#----------------------------------------------------------
+#    抵消分录行
+#----------------------------------------------------------
+class report_offsetting_entry_line(osv.osv):
+    _description = "抵消分录"
+    _name = "report.offsetting_entry.line"
+    _columns = {
+        'offsetting_entry_line':fields.many2one('report.offsetting_entry','分录'),
+        'merge_entry':fields.many2one('merge.entry','合并项目'),
+        'report_company':fields.many2one('report.company','对方公司',required=True),
+        'amount':fields.float('金额'),
+    }
+report_offsetting_entry_line()

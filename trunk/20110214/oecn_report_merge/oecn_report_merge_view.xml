@@ -160,5 +160,121 @@
         <wizard id="wiz_action_report_grid" menu="False" model="report.data.grid" name="report.data.grid" string="报表表格"/>
         <menuitem icon="STOCK_JUSTIFY_FILL" action="wiz_action_report_grid" id="menu_report_form"
         parent="menu_report" type="wizard" sequence="5"/>
+        
+   <!--
+    合并项目
+    -->
+		<record id="view_merge_entry_form" model="ir.ui.view">
+            <field name="name">merge.entry.form</field>
+            <field name="model">merge.entry</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="merge_entry" >
+                    <field name="name" select="1"/>
+                    <field name="active" select="1"/>
+                    <field name="report_type" select="1"/>
+                    <field name="row" select="1"/>
+                    <field name="column" select="1"/>
+                </form>
+            </field>
+        </record>
+		<record id="view_merge_entry_tree" model="ir.ui.view">
+            <field name="name">merge.entry.tree</field>
+            <field name="model">merge.entry</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="merge_entry" >
+                    <field name="name" />
+                    <field name="active" />
+                    <field name="report_type" />
+                    <field name="row" />
+                    <field name="column" />
+                </tree>
+            </field>
+        </record>
+		 <record id="action_merge_entry_form" model="ir.actions.act_window">
+            <field name="name">合并项目</field>
+            <field name="res_model">merge.entry</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+     <menuitem action="action_merge_entry_form" id="menu_merge_entry_form"  parent="menu_report"/>
+	 <!--
+    抵消分录
+    -->
+		<record id="view_report_offsetting_entry_form" model="ir.ui.view">
+            <field name="name">report.offsetting_entry.from</field>
+            <field name="model">report.offsetting_entry</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="report_offsetting_entry" >
+                    <field name="code" select="1"/>
+                    <field name="year" select="1"/>
+                    <field name="month" select="1"/>
+                    <field name="report_company" select="1"/>
+                    <field name="line_ids" select="1"/>
+					<field name="create_uid" />
+					<field name="create_date" />
+                </form>
+            </field>
+        </record>
+		<record id="view_report_offsetting_entry_tree" model="ir.ui.view">
+            <field name="name">report.offsetting_entry.tree</field>
+            <field name="model">report.offsetting_entry</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="report_offsetting_entry" >
+                    <field name="code" select="1"/>
+                    <field name="year" select="1"/>
+                    <field name="month" select="1"/>
+                    <field name="report_company" select="1"/>
+                    <field name="line_ids" select="1"/>
+					<field name="create_uid" />
+					<field name="create_date" />
+                </tree>
+            </field>
+        </record>
+		 <record id="action_report_offsetting_entry_form" model="ir.actions.act_window">
+            <field name="name">抵消分录</field>
+            <field name="res_model">report.offsetting_entry</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+     <menuitem action="action_report_offsetting_entry_form" id="menu_report_offsetting_entry_form"  parent="menu_report"/>	
+	<!--
+    抵消分录行
+    -->
+		<record id="view_report_offsetting_entry_line_form" model="ir.ui.view">
+            <field name="name">report.offsetting_entry.line.from</field>
+            <field name="model">report.offsetting_entry.line</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="offsetting_entry_line" >
+                    <field name="merge_entry" select="1"/>
+                    <field name="report_company" select="1"/>
+                    <field name="amount" select="1"/>
+                </form>
+            </field>
+        </record>
+		<record id="view_report_offsetting_entry_line_tree" model="ir.ui.view">
+            <field name="name">report.offsetting_entry.line.tree</field>
+            <field name="model">report.offsetting_entry.line</field>
+            <field name="type">tree</field>
+            <field name="arch" type="xml">
+                <tree string="report_offsetting_entry" >
+                    <field name="merge_entry" select="1"/>
+                    <field name="report_company" select="1"/>
+                    <field name="amount" select="1"/>
+                </tree>
+            </field>
+        </record>
+		 <record id="action_report_offsetting_entry_line_form" model="ir.actions.act_window">
+            <field name="name">抵消分录行</field>
+            <field name="res_model">report.offsetting_entry.line</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+     <menuitem action="action_report_offsetting_entry_line_form" id="menu_report_offsetting_entry_line_form"  parent="menu_report"/>
+	 
     </data>
 </openerp>
