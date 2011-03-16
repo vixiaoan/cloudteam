@@ -50,27 +50,9 @@ class report_type(osv.osv):
     _columns = {
         'code': fields.char('编号', size=64, required=True),
         'name': fields.char('名字', size=128, required=True),
-        'report_format': fields.one2many('report.format','report_type','报表格式')
+        'merge_column': fields.char('合并列', size=128, required=True)
     }
 report_type()
-
-#----------------------------------------------------------
-#    报表格式
-#----------------------------------------------------------
-    
-class report_format(osv.osv):
-    _description = "报表格式"
-    _name = "report.format"
-    _columns = {
-        'report_type':fields.many2one('report.type','报表类型'),
-        'row':fields.char('行号',size=25,required=True),
-        'column':fields.char('列号',size=25,required=True),
-        'text':fields.char('文本',size=128),
-        'value':fields.float('数值'),
-    }
-report_format()
-
-
 
 #----------------------------------------------------------
 #    报表数据
@@ -88,7 +70,8 @@ class report_data(osv.osv):
         'column':fields.char('列号',size=25,required=True),
         'text':fields.char('文本',size=128),
         'value':fields.float('数值'),
-    }
+        'is_template':fields.boolean('模板'),
+        }
     _rec_name = 'report_company'
     
     def check_input(self, cr, uid, comapny, report_type, year, month):
@@ -142,16 +125,34 @@ class report_data(osv.osv):
         """
         传入company,report_type,year,month，还有report_deta_objs是包含row,column,text,value四列的list，传出成功或失败的信息
         """
-        res = False
+        res = {
+            #result是否成功插入数据 delete_num 删除重复数据的数量 create_num:创建重复数据的数量
+            'result':True,
+            'delete_num':0,
+            'create_num':0,
+        }
         #验证输入数据是否合法
         result = {}
         result = self.check_input(cr, uid, company, report_type, year, month)
+        company_obj = self.pool.get('report.data').read(cr, uid ,result['company_id'],['is_template'])
         if len(result['msg']):
             return result['msg']
         for i in range(0,len(report_deta_objs)):
-            id  = self.pool.get('report.data').create(cr, uid, {'report_company': result['company_id'][0],'report_type':result['report_type_id'][0],'year':result['year'],'month':result['month'],'row':report_deta_objs[i]['row'],'column':report_deta_objs[i]['column'],'text':report_deta_objs[i]['text'],'value':report_deta_objs[i]['value']})
+        #循环输入全部的report_data_objs
+            report_data_ids = self.pool.get('report.data').search(cr, uid , [('report_company','=',result['company_id']), ('report_type','=',result['report_type_id']),('year','=',result['year']),('month','=',result['month'])])
+            if report_data_ids:
+            #先删除已有的相同key（company\report_type\year\month）的report_data
+                self.pool.get('report.data').unlink(cr, uid, report_data_ids)
+                res['delete_num'] = res['delete_num']+1
+            if company_obj[0]['is_template']:
+            #如果company是模版公司，年和月设置为0000年1月
+                id  = self.pool.get('report.data').create(cr, uid, {'report_company': result['company_id'][0],'report_type':result['report_type_id'][0],'year':'0000','month':'1','row':report_deta_objs[i]['row'],'column':report_deta_objs[i]['column'],'text':report_deta_objs[i]['text'],'value':report_deta_objs[i]['value']})
+                res['create_num'] = res['create_num']+1
+            else:
+                id  = self.pool.get('report.data').create(cr, uid, {'report_company': result['company_id'][0],'report_type':result['report_type_id'][0],'year':result['year'],'month':result['month'],'row':report_deta_objs[i]['row'],'column':report_deta_objs[i]['column'],'text':report_deta_objs[i]['text'],'value':report_deta_objs[i]['value']})
+                res['create_num'] = res['create_num']+1
         if id:
-            res = True
+            res['result'] = True
         return res
         
 
@@ -221,7 +222,7 @@ class report_data_grid(osv.osv):
             if not columns:
                 raise osv.except_osv('Error !','No data!')
             xml = '''<?xml version="1.0"?>
-            <%s editable="bottom">
+            <%s>
             <field name="line_num"/>
         ''' % (view_type,)
             for column in columns:
@@ -248,6 +249,10 @@ class merge_entry(osv.osv):
         'row':fields.char('行号',size=25,required=True),
         'column':fields.char('列号',size=25,required=True),
     }
+    
+    _defaults = {
+        'active':lambda *a:1,
+     }
 merge_entry()
 
 #----------------------------------------------------------
@@ -274,9 +279,9 @@ class report_offsetting_entry_line(osv.osv):
     _description = "抵消分录"
     _name = "report.offsetting_entry.line"
     _columns = {
-        'offsetting_entry_line':fields.many2one('report.offsetting_entry','分录'),
-        'merge_entry':fields.many2one('merge.entry','合并项目'),
+        'offsetting_entry_line':fields.many2one('report.offsetting_entry','分录',),
+        'merge_entry':fields.many2one('merge.entry','合并项目',required=True),
         'report_company':fields.many2one('report.company','对方公司',required=True),
-        'amount':fields.float('金额'),
+        'amount':fields.float('金额',required=True),
     }
 report_offsetting_entry_line()
