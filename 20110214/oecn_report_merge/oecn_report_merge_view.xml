@@ -21,7 +21,7 @@
             <field name="model">report.company</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree string="report_company">
+                <tree string="report_company" editable = "top">
                     <field name="code"/>
                     <field name="name"/>
                     <field name="parent_id"/>
@@ -46,17 +46,9 @@
             <field name="model">report.type</field>
             <field name="type">form</field>
             <field name="arch" type="xml">
-                    <form string="report_type">
+                        <form string="report_type">
                         <field name="name" select="1"/>
                         <field name="code" select="1"/>
-                        <field colspan="4" name="report_format" nolabel="1" widget="one2many_list">
-                            <form string="report_format">
-                                <field name="row" />
-                                <field name="column" />
-                                <field name="text" />
-                                <field name="value" />
-                            </form>
-                        </field>
                     </form>
             </field>
         </record>
@@ -65,7 +57,7 @@
             <field name="model">report.type</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree string="report_type">
+                <tree string="report_type" editable = "top">
                     <field name="code"/>
                     <field name="name"/>
                 </tree>
@@ -78,37 +70,6 @@
             <field name="view_mode">tree,form</field>
         </record>
         <menuitem action="action_report_type_form" id="menu_report_type_form"  parent="menu_report_config"/>
-
-    <!--
-    报表格式
-    -->
-    
-    <record id="view_report_format_form" model="ir.ui.view">
-            <field name="name">report.format.form</field>
-            <field name="model">report.format</field>
-            <field name="type">form</field>
-            <field name="arch" type="xml">
-                    <form string="report_format">
-                        <field name="row" />
-                        <field name="column" />
-                        <field name="text" />
-                        <field name="value" />
-                    </form>
-            </field>
-        </record>
-        <record id="view_report_format_tree" model="ir.ui.view">
-            <field name="name">report.format.tree</field>
-            <field name="model">report.format</field>
-            <field name="type">tree</field>
-            <field name="arch" type="xml">
-                <tree string="report_format">
-                    <field name="row" />
-                    <field name="column" />
-                    <field name="text" />
-                    <field name="value" />
-                </tree>
-            </field>
-        </record>
 
    <!--
     报表数据
@@ -164,7 +125,7 @@
    <!--
     合并项目
     -->
-		<record id="view_merge_entry_form" model="ir.ui.view">
+        <record id="view_merge_entry_form" model="ir.ui.view">
             <field name="name">merge.entry.form</field>
             <field name="model">merge.entry</field>
             <field name="type">form</field>
@@ -178,12 +139,12 @@
                 </form>
             </field>
         </record>
-		<record id="view_merge_entry_tree" model="ir.ui.view">
+        <record id="view_merge_entry_tree" model="ir.ui.view">
             <field name="name">merge.entry.tree</field>
             <field name="model">merge.entry</field>
             <field name="type">tree</field>
             <field name="arch" type="xml">
-                <tree string="merge_entry" >
+                <tree string="merge_entry" editable = "top">
                     <field name="name" />
                     <field name="active" />
                     <field name="report_type" />
@@ -192,17 +153,17 @@
                 </tree>
             </field>
         </record>
-		 <record id="action_merge_entry_form" model="ir.actions.act_window">
+         <record id="action_merge_entry_form" model="ir.actions.act_window">
             <field name="name">合并项目</field>
             <field name="res_model">merge.entry</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
         </record>
-     <menuitem action="action_merge_entry_form" id="menu_merge_entry_form"  parent="menu_report"/>
-	 <!--
+     <menuitem action="action_merge_entry_form" id="menu_merge_entry_form"  parent="menu_report_config"/>
+     <!--
     抵消分录
     -->
-		<record id="view_report_offsetting_entry_form" model="ir.ui.view">
+        <record id="view_report_offsetting_entry_form" model="ir.ui.view">
             <field name="name">report.offsetting_entry.from</field>
             <field name="model">report.offsetting_entry</field>
             <field name="type">form</field>
@@ -212,13 +173,13 @@
                     <field name="year" select="1"/>
                     <field name="month" select="1"/>
                     <field name="report_company" select="1"/>
-                    <field name="line_ids" select="1"/>
-					<field name="create_uid" />
-					<field name="create_date" />
+                    <field name="line_ids" colspan = "4"/>
+                    <field name="create_uid" />
+                    <field name="create_date" />
                 </form>
             </field>
         </record>
-		<record id="view_report_offsetting_entry_tree" model="ir.ui.view">
+        <record id="view_report_offsetting_entry_tree" model="ir.ui.view">
             <field name="name">report.offsetting_entry.tree</field>
             <field name="model">report.offsetting_entry</field>
             <field name="type">tree</field>
@@ -228,23 +189,23 @@
                     <field name="year" select="1"/>
                     <field name="month" select="1"/>
                     <field name="report_company" select="1"/>
-                    <field name="line_ids" select="1"/>
-					<field name="create_uid" />
-					<field name="create_date" />
+                    <field name="line_ids"/>
+                    <field name="create_uid" />
+                    <field name="create_date" />
                 </tree>
             </field>
         </record>
-		 <record id="action_report_offsetting_entry_form" model="ir.actions.act_window">
+         <record id="action_report_offsetting_entry_form" model="ir.actions.act_window">
             <field name="name">抵消分录</field>
             <field name="res_model">report.offsetting_entry</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
         </record>
-     <menuitem action="action_report_offsetting_entry_form" id="menu_report_offsetting_entry_form"  parent="menu_report"/>	
-	<!--
+     <menuitem action="action_report_offsetting_entry_form" id="menu_report_offsetting_entry_form"  parent="menu_report"/>
+    <!--
     抵消分录行
     -->
-		<record id="view_report_offsetting_entry_line_form" model="ir.ui.view">
+        <record id="view_report_offsetting_entry_line_form" model="ir.ui.view">
             <field name="name">report.offsetting_entry.line.from</field>
             <field name="model">report.offsetting_entry.line</field>
             <field name="type">form</field>
@@ -256,7 +217,7 @@
                 </form>
             </field>
         </record>
-		<record id="view_report_offsetting_entry_line_tree" model="ir.ui.view">
+        <record id="view_report_offsetting_entry_line_tree" model="ir.ui.view">
             <field name="name">report.offsetting_entry.line.tree</field>
             <field name="model">report.offsetting_entry.line</field>
             <field name="type">tree</field>
@@ -268,13 +229,12 @@
                 </tree>
             </field>
         </record>
-		 <record id="action_report_offsetting_entry_line_form" model="ir.actions.act_window">
+         <record id="action_report_offsetting_entry_line_form" model="ir.actions.act_window">
             <field name="name">抵消分录行</field>
             <field name="res_model">report.offsetting_entry.line</field>
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
         </record>
-     <menuitem action="action_report_offsetting_entry_line_form" id="menu_report_offsetting_entry_line_form"  parent="menu_report"/>
-	 
+     
     </data>
 </openerp>
