@@ -21,3 +21,4 @@
 ##############################################################################
 
 import wizard_report_grid
+import wizard_merge_report

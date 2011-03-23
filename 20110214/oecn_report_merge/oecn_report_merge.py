@@ -199,7 +199,6 @@ class report_data_grid(osv.osv):
                         row['column_'+str(column['column'])] = ''
                     row['id'] = text_value[0]['id']
             row['line_num'] = str(row['row'])
-        logger.notifyChannel('addon:'+self._name,netsvc.LOG_INFO,'rows:%s'%(rows))
         return rows
         
     def fields_get(self, cr, uid, fields=None, context=None, read_access=True):
@@ -231,8 +230,7 @@ class report_data_grid(osv.osv):
             xml += '''</%s>'''% (view_type,)
             result['arch'] = xml
             result['fields'] = self.fields_get(cr, uid,'line',context = context)
-            
-        logger.notifyChannel('addon:'+self._name,netsvc.LOG_INFO,'fields_view_get_result:%s'%(result))
+        logger.notifyChannel('addon:'+self._name,netsvc.LOG_INFO,'report_data_grid_result:%s'%(result))
         return result
 report_data_grid()
 
@@ -247,7 +245,6 @@ class merge_entry(osv.osv):
         'active': fields.boolean('Active'),
         'report_type':fields.many2one('report.type','报表类型',required=True),
         'row':fields.char('行号',size=25,required=True),
-        'column':fields.char('列号',size=25,required=True),
     }
     
     _defaults = {
@@ -276,7 +273,7 @@ report_offsetting_entry()
 #    抵消分录行
 #----------------------------------------------------------
 class report_offsetting_entry_line(osv.osv):
-    _description = "抵消分录"
+    _description = "抵消分录行"
     _name = "report.offsetting_entry.line"
     _columns = {
         'offsetting_entry_line':fields.many2one('report.offsetting_entry','分录',),
@@ -285,3 +282,106 @@ class report_offsetting_entry_line(osv.osv):
         'amount':fields.float('金额',required=True),
     }
 report_offsetting_entry_line()
+
+#----------------------------------------------------------
+#    合并报表底稿
+#----------------------------------------------------------
+class merge_report(osv.osv):
+    _name = 'merge.report'
+    _description = 'Merge Report'
+    _inherit='report.data'
+    _table = 'report_data'
+    
+    def create(self, cr, uid, vals, cotext=None):
+        raise osv.except_osv('Error !','You cannot add an entry to this view!')
+    
+    def unlink(self, *args, **argv):
+        raise osv.except_osv('Error !', 'You cannot delete an entry of this view !')
+    
+    def write(self, cr, uid, ids, vals, context=None):
+        raise osv.except_osv('Error !', 'You cannot write an entry of this view !')
+    
+    def read(self, cr, uid, ids, fields=None, context=None, load='_classic_read'):
+        if context.get('report_company',False) and context.get('report_type',False):
+            #找出相关的公司
+            report_company_objs = self.pool.get('report.company').browse(cr, uid,context['report_company'], context = context)
+            #找出相关报表类型
+            report_type_obj = self.pool.get('report.type').browse(cr, uid,context['report_type'], context = context)
+            #找出合并行
+            merge_entry_ids = self.pool.get('merge.entry').search(cr, uid,[('report_type','=',context['report_type'])])
+            merge_entry_objs = self.pool.get('merge.entry').browse(cr, uid,merge_entry_ids)
+            i = 0
+            result = []
+            row={
+                 'id':i+1,
+                 'line_num':i+1,
+                 'merge_column':'合计',
+                 }
+            for report_company_obj in report_company_objs:        
+                row['company_'+str(report_company_obj.id)] = report_company_obj.name
+            result.append(row)
+            i = i+1
+            for merge_entry_obj in merge_entry_objs: 
+                row={'merge_column':0}
+                for report_company_obj in report_company_objs:
+                    text_value_id = self.pool.get('report.data').search(cr, uid, [('report_company', '=', report_company_obj.id),('report_type', '=',  context['report_type']),('year', '=', context['year']),('month', '=', context['month']),('column', '=', report_type_obj.merge_column),('row', '=', merge_entry_obj.row)])
+                    text_value = self.pool.get('report.data').read(cr, uid,text_value_id,['text','value','id'])
+                    if text_value:
+                 #如果text或者value存在即赋值
+                        if text_value[0]['value']:
+                            row['company_'+str(report_company_obj.id)] =  text_value[0]['value']
+                            row['merge_column'] = row['merge_column'] + text_value[0]['value']
+                        elif text_value[0]['text']:
+                            row['company_'+str(report_company_obj.id)] =  text_value[0]['text']
+                    else:
+                        row['company_'+str(report_company_obj.id)] = ''
+                row['id'] = i+1
+                row['line_num'] = i+1
+                i = i+1
+                result.append(row)
+        return result
+        
+    def fields_get(self, cr, uid, fields=None, context=None, read_access=True):
+       result = super(merge_report, self).fields_get(cr, uid, fields, context)
+       column_name = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
+       i = 0
+       if context.get('report_company',False) and context.get('report_type',False):
+           #找出相关的公司
+           report_company_objs = self.pool.get('report.company').browse(cr, uid,context['report_company'], context = context)
+           #找出相关报表类型
+           report_type_obj = self.pool.get('report.type').browse(cr, uid,context['report_type'], context = context)
+           result['line_num'] = {'string': '行号/列号','type': 'char','size': 7}
+           
+           for report_company_obj in report_company_objs:
+               #如果超过26行可能会出现问题
+               result['company_'+ str(report_company_obj.id)] = {'string': '%s'%column_name[i],'type': 'char','size': 7}
+               i=i+1
+           result['merge_column'] = {'string':column_name[i],'type': 'char','size': 7}
+       return result
+        
+    def fields_view_get(self, cr, uid, view_id=None,view_type='form',context={},toolbar=False):
+        '''
+        根据 公司，年，月，报表类型，生成合并报表底稿
+        '''
+        logger = netsvc.Logger()
+        result = super(merge_report, self).fields_view_get(cr, uid, view_id, view_type, context=context, toolbar=toolbar)
+        if context.get('report_company',False) and context.get('report_type',False):
+           #找出相关的公司
+           report_company_objs = self.pool.get('report.company').browse(cr, uid,context['report_company'], context = context)
+           #找出相关报表类型
+           #report_type_obj = self.pool.get('report.type').browse(cr, uid,context['report_type'], context = context)
+           xml = '''<?xml version="1.0"?>
+           <%s>
+           <field name="line_num"/>
+           '''%(view_type)
+           for report_company_obj in report_company_objs:
+               xml +='''<field name="company_%s"/>'''%(report_company_obj.id)
+           xml +='''<field name="merge_column"/>'''
+           xml +='''</%s>'''%(view_type)
+           result['arch'] = xml
+           result['fields'] = self.fields_get(cr, uid,'xxx',context = context)
+           logger.notifyChannel('addon:'+self._name,netsvc.LOG_INFO,'merge_report_result:%s'%(result))
+        return result
+         
+merge_report()
+

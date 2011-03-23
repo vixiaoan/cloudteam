@@ -49,6 +49,7 @@
                         <form string="report_type">
                         <field name="name" select="1"/>
                         <field name="code" select="1"/>
+                        <field name="merge_column" select="1"/>
                     </form>
             </field>
         </record>
@@ -60,6 +61,7 @@
                 <tree string="report_type" editable = "top">
                     <field name="code"/>
                     <field name="name"/>
+                    <field name="merge_column" />
                 </tree>
             </field>
         </record>
@@ -135,7 +137,6 @@
                     <field name="active" select="1"/>
                     <field name="report_type" select="1"/>
                     <field name="row" select="1"/>
-                    <field name="column" select="1"/>
                 </form>
             </field>
         </record>
@@ -149,7 +150,6 @@
                     <field name="active" />
                     <field name="report_type" />
                     <field name="row" />
-                    <field name="column" />
                 </tree>
             </field>
         </record>
@@ -235,6 +235,11 @@
             <field name="view_type">form</field>
             <field name="view_mode">tree,form</field>
         </record>
-     
+<!--
+合并底稿wizard
+-->
+        <wizard id="wiz_action_merge_report" menu="False" model="merge.report" name="merge.report" string="合并底稿"/>
+        <menuitem icon="STOCK_JUSTIFY_FILL" action="wiz_action_merge_report" id="menu_merge_report_form"
+        parent="menu_report" type="wizard" sequence="5"/>
     </data>
 </openerp>
