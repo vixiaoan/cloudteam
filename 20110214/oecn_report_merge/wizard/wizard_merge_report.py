@@ -30,13 +30,13 @@ _merge_report_form='''<?xml version="1.0"?>
 <field name="report_type"/>
 <field name="year"/>
 <field name="month"/>
-<field name="report_company" widget="many2many" colspan = "4"/>
+<field name="report_company"  colspan = "4"/>
 </form>
 '''
 _merge_report_fields = {
         'report_company': {
             'string':'组织结构', 
-            'type':'many2many',
+            'type':'many2one',
             'relation':'report.company', 
             'required':True
         },
@@ -62,18 +62,18 @@ _merge_report_fields = {
 
 def _action_open_window(self, cr, uid, data, context):
     form = data['form']
-    #cr.execute('select id,name from ir_ui_view where model=%s and type=%s', ('report.data', 'form'))
-    #view_res = cr.fetchone()
+    #这里只考虑了一层的父子结构
+    company_ids = pooler.get_pool(cr.dbname).get('report.company').search(cr, uid, [('parent_id','=',form['report_company'])])
     return{
         'view_type':'form',
         'view_mode':'tree,form',
         'res_model': 'merge.report',
         'view_id':False,
         'type':'ir.actions.act_window',
-        'context':"{'report_company':%s,'report_type':%d, 'year':%s,'month':%s}"%(form['report_company'][0][2],form['report_type'],form['year'],form['month']),
+        'context':"{'report_company':%s,'parent_company':%s,'report_type':%d, 'year':%s,'month':%s}"%(company_ids,form['report_company'],form['report_type'],form['year'],form['month']),
     }
     
-class wiz_merge_report_grid(wizard.interface):
+class wiz_merge_report(wizard.interface):
     states = {
         'init': {
             'actions': [],
@@ -84,4 +84,4 @@ class wiz_merge_report_grid(wizard.interface):
             'result': {'type': 'action', 'action': _action_open_window, 'state':'end'}
         }
     }
-wiz_merge_report_grid('merge.report')
+wiz_merge_report('merge.report')
