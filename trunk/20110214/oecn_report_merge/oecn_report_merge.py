@@ -35,8 +35,7 @@ class report_company(osv.osv):
         'code': fields.char('编号', size=64, required=True),
         'name': fields.char('名字', size=128, required=True),
         'parent_id': fields.many2one('report.company', '上级', ondelete='cascade'),
-        'parent_left': fields.integer('Parent Left', select=1),
-        'parent_right': fields.integer('Parent Right', select=1),
+        'is_template':fields.boolean('模板'),
     }
 report_company()
 
@@ -70,7 +69,6 @@ class report_data(osv.osv):
         'column':fields.char('列号',size=25,required=True),
         'text':fields.char('文本',size=128),
         'value':fields.float('数值'),
-        'is_template':fields.boolean('模板'),
         }
     _rec_name = 'report_company'
     
@@ -134,7 +132,7 @@ class report_data(osv.osv):
         #验证输入数据是否合法
         result = {}
         result = self.check_input(cr, uid, company, report_type, year, month)
-        company_obj = self.pool.get('report.data').read(cr, uid ,result['company_id'],['is_template'])
+        company_obj = self.pool.get('report.company').read(cr, uid ,result['company_id'],['is_template'])
         if len(result['msg']):
             return result['msg']
         for i in range(0,len(report_deta_objs)):
@@ -302,6 +300,7 @@ class merge_report(osv.osv):
         raise osv.except_osv('Error !', 'You cannot write an entry of this view !')
     
     def read(self, cr, uid, ids, fields=None, context=None, load='_classic_read'):
+        column_name = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
         if context.get('report_company',False) and context.get('report_type',False):
             #找出相关的公司
             report_company_objs = self.pool.get('report.company').browse(cr, uid,context['report_company'], context = context)
@@ -312,33 +311,123 @@ class merge_report(osv.osv):
             merge_entry_objs = self.pool.get('merge.entry').browse(cr, uid,merge_entry_ids)
             i = 0
             result = []
+            #首行
             row={
                  'id':i+1,
                  'line_num':i+1,
+                 'merge_entry_name':'项目',
+                 'merge_entry_line_num':'行次',
                  'merge_column':'合计',
+                 'offsetting_entry':'抵消分录',
                  }
+            #生成新的报表对象
+            create_report_data_obj = {
+                'report_company':context['parent_company'],
+                'report_type':context['report_type'],
+                'year':context['year'],
+                'month':context['month'],
+                'row':'1',
+                }
+            create_report_data_obj['text'] = '项目'
+            create_report_data_obj['column'] = 'A'
+            self.pool.get('report.data').create(cr, uid,create_report_data_obj)
+            create_report_data_obj['text'] = '行号'
+            create_report_data_obj['column'] = 'B'
+            self.pool.get('report.data').create(cr, uid,create_report_data_obj)      
+            j = 2
             for report_company_obj in report_company_objs:        
                 row['company_'+str(report_company_obj.id)] = report_company_obj.name
+                create_report_data_obj['column'] = column_name[j]
+                create_report_data_obj['text'] = report_company_obj.name
+                self.pool.get('report.data').create(cr, uid,create_report_data_obj)
             result.append(row)
             i = i+1
+            #第二行
             for merge_entry_obj in merge_entry_objs: 
-                row={'merge_column':0}
+                row={
+                     #合并项，抵消分录清零
+                     'merge_column':0,
+                     'offsetting_entry':0,
+                     }
+                create_report_data_obj['row'] = i+1
+                j = 2
                 for report_company_obj in report_company_objs:
+                    create_report_data_obj['column'] = column_name[j]
+                    j=j+1
+                    #找出相应列数值或者字符
                     text_value_id = self.pool.get('report.data').search(cr, uid, [('report_company', '=', report_company_obj.id),('report_type', '=',  context['report_type']),('year', '=', context['year']),('month', '=', context['month']),('column', '=', report_type_obj.merge_column),('row', '=', merge_entry_obj.row)])
                     text_value = self.pool.get('report.data').read(cr, uid,text_value_id,['text','value','id'])
                     if text_value:
-                 #如果text或者value存在即赋值
+                    #如果text或者value存在即赋值
                         if text_value[0]['value']:
                             row['company_'+str(report_company_obj.id)] =  text_value[0]['value']
                             row['merge_column'] = row['merge_column'] + text_value[0]['value']
+                            #保存
+                            del create_report_data_obj['text']
+                            create_report_data_obj['value'] = text_value[0]['value']
+                            self.pool.get('report.data').create(cr, uid,create_report_data_obj)
                         elif text_value[0]['text']:
                             row['company_'+str(report_company_obj.id)] =  text_value[0]['text']
+                            #保存
+                            del create_report_data_obj['value']
+                            create_report_data_obj['text'] = text_value[0]['text']                     
                     else:
                         row['company_'+str(report_company_obj.id)] = ''
+                        #保存
+                        del create_report_data_obj['value']
+                        del create_report_data_obj['text']
+                        create_report_data_obj['text'] = text_value[0]['text']
+                        self.pool.get('report.data').create(cr, uid,create_report_data_obj)
+                #通过公司、年、月 找出抵消分录
+                offsetting_entry_ids = self.pool.get('report.offsetting_entry').search(cr, uid, [('report_company', 'in', context['report_company']),('year', '=', context['year']),('month', '=', context['month'])]) 
+                #通过抵消分录、公司、合并项目  找出抵消分录行
+                offsetting_entry_line_ids = self.pool.get('report.offsetting_entry.line').search(cr, uid,[('offsetting_entry_line','in',offsetting_entry_ids),('report_company', 'in', context['report_company']),('merge_entry','=',merge_entry_obj.id)])
+                if offsetting_entry_line_ids:
+                    offsetting_entry_line_amounts = self.pool.get('report.offsetting_entry.line').read(cr, uid , offsetting_entry_line_ids, ['amount'])
+                    for offsetting_entry_line_amount in offsetting_entry_line_amounts:
+                        #求出抵消分录的总数
+                        row['offsetting_entry'] = row['offsetting_entry']+offsetting_entry_line_amount['amount']
+                row['merge_column'] = row['merge_column']-row['offsetting_entry']
                 row['id'] = i+1
                 row['line_num'] = i+1
+                #项目名称
+                merge_entry_name_id = self.pool.get('report.data').search(cr, uid,[('report_company', '=', report_company_objs[0].id),('report_type', '=',  context['report_type']),('year', '=', context['year']),('month', '=', context['month']),('row','=',merge_entry_obj.row),('column','=','A')])
+                merge_entry_name = self.pool.get('report.data').read(cr, uid, merge_entry_name_id,['text'])
+                row['merge_entry_name'] = merge_entry_name[0]['text']
+                #保存
+                create_report_data_obj['text'] = merge_entry_name[0]['text']
+                create_report_data_obj['column']='A'
+                del create_report_data_obj['value']
+                self.pool.get('report.data').create(cr, uid,create_report_data_obj)
+                #行次
+                merge_entry_line_num_id = self.pool.get('report.data').search(cr, uid,[('report_company', '=', report_company_objs[0].id),('report_type', '=',  context['report_type']),('year', '=', context['year']),('month', '=', context['month']),('row','=',merge_entry_obj.row),('column','=','B')])
+                merge_entry_line_num = self.pool.get('report.data').read(cr, uid, merge_entry_line_num_id,['text'])
+                row['merge_entry_line_num'] =merge_entry_line_num[0]['text']
+                #保存
+                create_report_data_obj['column']='B'
+                del create_report_data_obj['value']
+                self.pool.get('report.data').create(cr, uid,create_report_data_obj)
                 i = i+1
                 result.append(row)
+        #删除旧的报表
+        old_report_ids = self.pool.get('report.data').search(cr, uid,[('report_company', '=', context['parent_company']),('report_type', '=',  context['report_type']),('year', '=', context['year']),('month', '=', context['month'])])
+        self.pool.get('report.data').unlink(cr, uid,old_report_ids)
+        #生成新的报表
+        create_report_data_obj = {
+                'report_company':context['parent_company'],
+                'report_type':context['report_type'],
+                'year':context['year'],
+                'month':context['month'],
+                'row':res['line_num'],
+                }
+        #生成首行
+        for report_company_obj in report_company_objs:
+            create_report_data_obj['text'] = report_company_obj.name
+            self.pool.get('report.data').create(cr, uid,create_report_data_obj)
+        for res in result:
+            create_report_data_obj['text']
+            self.pool.get('report.data').create(cr, uid,create_report_data_obj)
+            res
         return result
         
     def fields_get(self, cr, uid, fields=None, context=None, read_access=True):
@@ -351,14 +440,16 @@ class merge_report(osv.osv):
            #找出相关报表类型
            report_type_obj = self.pool.get('report.type').browse(cr, uid,context['report_type'], context = context)
            result['line_num'] = {'string': '行号/列号','type': 'char','size': 7}
-           
+           result['merge_entry_name'] = {'string':column_name[i],'type': 'char','size': 7}
+           result['merge_entry_line_num'] = {'string':column_name[i+1],'type': 'char','size': 7}
            for report_company_obj in report_company_objs:
-               #如果超过26行可能会出现问题
-               result['company_'+ str(report_company_obj.id)] = {'string': '%s'%column_name[i],'type': 'char','size': 7}
+               #如果超过26列可能会出现问题
+               result['company_'+ str(report_company_obj.id)] = {'string': '%s'%column_name[i+2],'type': 'char','size': 7}
                i=i+1
-           result['merge_column'] = {'string':column_name[i],'type': 'char','size': 7}
+           result['offsetting_entry'] = {'string':column_name[i+3],'type': 'char','size': 7}
+           result['merge_column'] = {'string':column_name[i+4],'type': 'char','size': 7}
        return result
-        
+   
     def fields_view_get(self, cr, uid, view_id=None,view_type='form',context={},toolbar=False):
         '''
         根据 公司，年，月，报表类型，生成合并报表底稿
@@ -374,8 +465,15 @@ class merge_report(osv.osv):
            <%s>
            <field name="line_num"/>
            '''%(view_type)
+           #项目名称
+           xml +='''<field name="merge_entry_name"/>'''
+           #行次
+           xml +='''<field name="merge_entry_line_num"/>'''
            for report_company_obj in report_company_objs:
                xml +='''<field name="company_%s"/>'''%(report_company_obj.id)
+           #抵消分录
+           xml +='''<field name="offsetting_entry"/>'''
+           #合并列
            xml +='''<field name="merge_column"/>'''
            xml +='''</%s>'''%(view_type)
            result['arch'] = xml

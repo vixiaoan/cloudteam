@@ -13,6 +13,7 @@
                         <field name="name" select="1"/>
                         <field name="code" select="1"/>
                         <field name="parent_id"/>
+                        <field name="is_template"/>
                     </form>
             </field>
         </record>
@@ -25,6 +26,7 @@
                     <field name="code"/>
                     <field name="name"/>
                     <field name="parent_id"/>
+                    <field name="is_template"/>
                 </tree>
             </field>
         </record>
