@@ -1,0 +1,32 @@
+<openerp>
+  <data>
+  
+	
+	
+
+	
+	
+    <record model="ir.ui.view" id="view_users_form1">
+        <field name="name">view.users.form1</field>
+        <field name="model">res.users</field>
+        <field name="type">form</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+         <notebook position="inside" >
+                <page string="department">
+				   
+                    <field name="department_id" />
+					   
+                </page>
+            </notebook>
+	
+        </field>
+    </record>
+	
+	
+	
+	
+	
+
+  </data>
+</openerp>

@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<openerp>
+<data>
+
+	<record model="ir.rule.group" id="product_by_saleman">
+		<field name="name">product by saleman</field>
+		<field name="model_id" search="[('model','=','product.product')]" model="ir.model"/>
+		<field name="global" eval="False"/>
+	</record>
+	
+	<record model="ir.rule" id="sale_rule">
+
+		<field name="domain_force">['|',('product_tmpl_id.product_manager','=',user.id),('product_tmpl_id.product_manager.department_id.manager_id','=',user.id)]</field>
+		<field name="rule_group" ref="product_by_saleman"/>
+	</record>
+
+
+</data>
+</openerp>

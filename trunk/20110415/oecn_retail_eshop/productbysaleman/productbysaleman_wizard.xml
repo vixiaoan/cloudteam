@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+
+    <wizard
+        string="update to user"
+        model="hr.department"
+        name="hr.updatetouser"
+       
+        id="wizard_hr_updatetouser"/>
+
+
+    </data>
+</openerp>
