@@ -1,0 +1,33 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_product_uom_categ_manager1,product.uom.categ manager,product.model_product_uom_categ,group_product_manager2,1,1,1,1
+access_product_uom_manager1,product.uom manager,product.model_product_uom,group_product_manager2,1,1,1,1
+access_product_ul_manager1,product.ul manager,product.model_product_ul,group_product_manager2,1,1,1,1
+access_product_category_manager1,product.category manager,product.model_product_category,group_product_manager2,1,1,1,1
+access_product_template_manager1,product.template manager,product.model_product_template,group_product_manager2,1,1,1,1
+access_product_product_manager1,product.product manager,product.model_product_product,group_product_manager2,1,1,1,1
+access_product_packaging_manager1,product.packaging manager,product.model_product_packaging,group_product_manager2,1,1,1,1
+access_product_supplierinfo_manager1,product.supplierinfo manager,product.model_product_supplierinfo,group_product_manager2,1,1,1,1
+access_pricelist_partnerinfo_manager1,pricelist.partnerinfo manager,product.model_pricelist_partnerinfo,group_product_manager2,1,1,1,1
+access_product_price_type_manager1,product.price.type manager,product.model_product_price_type,group_product_manager2,1,1,1,1
+access_product_pricelist_type_manager1,product.pricelist.type manager,product.model_product_pricelist_type,group_product_manager2,1,1,1,1
+access_product_pricelist_manager1,product.pricelist manager,product.model_product_pricelist,group_product_manager2,1,1,1,1
+access_product_pricelist_version_manager1,product.pricelist.version manager,product.model_product_pricelist_version,group_product_manager2,1,1,1,1
+access_product_pricelist_item_manager1,product.pricelist.item manager,product.model_product_pricelist_item,group_product_manager2,1,1,1,1
+access_product_uom_categ_user1,product.uom.categ.user,product.model_product_uom_categ,base.group_user,1,0,0,0
+access_product_uom_user1,product.uom.user,product.model_product_uom,base.group_user,1,0,0,0
+access_product_ul_user1,product.ul.user,product.model_product_ul,base.group_user,1,0,0,0
+access_product_category_user1,product.category.user,product.model_product_category,base.group_user,1,0,0,0
+access_product_template_user1,product.template.user,product.model_product_template,base.group_user,1,0,0,0
+access_product_product_user1,product.product.user,product.model_product_product,base.group_user,1,0,0,0
+access_product_packaging_user1,product.packaging.user,product.model_product_packaging,base.group_user,1,0,0,0
+access_product_supplierinfo_user1,product.supplierinfo.user,product.model_product_supplierinfo,base.group_user,1,0,0,0
+access_pricelist_partnerinfo_user1,pricelist.partnerinfo.user,product.model_pricelist_partnerinfo,base.group_user,1,0,0,0
+access_product_price_type_user1,product.price.type.user,product.model_product_price_type,base.group_user,1,0,0,0
+access_product_pricelist_type_user1,product.pricelist.type.user,product.model_product_pricelist_type,base.group_user,1,0,0,0
+access_product_pricelist_user1,product.pricelist.user,product.model_product_pricelist,base.group_user,1,0,0,0
+access_product_pricelist_version_user1,product.pricelist.version.user,product.model_product_pricelist_version,base.group_user,1,0,0,0
+access_product_pricelist_item_user1,product.pricelist.item.user,product.model_product_pricelist_item,base.group_user,1,0,0,0
+access_product_pricelist_type_partner_manager1,product.pricelist.type partner manager,product.model_product_pricelist_type,base.group_partner_manager,1,0,0,0
+access_product_pricelist_partner_manager1,product.pricelist partner manager,product.model_product_pricelist,base.group_partner_manager,1,0,0,0
+access_ir_property_group_product_manager2,ir_property group_product_manager2,base.model_ir_property,group_product_manager2,1,1,1,1
+access_hr_department_manager2,hr.department.manager,hr.model_hr_department,group_product_manager2,1,1,1,1
