@@ -26,7 +26,7 @@
     "author" : "Joshua@OECN",
     "init_xml" : [],
     "demo_xml" : [],
-    "update_xml": ['out_of_stock_alarm.xml'],
+    "update_xml": ['stock_alarm.xml'],
     "active": False,
     "installable": True,
 	"depends": ["base","mrp"]
