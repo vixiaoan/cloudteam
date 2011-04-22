@@ -22,13 +22,37 @@
 
 from osv import fields, osv
 from osv import osv
+import netsvc
 
-class product_product(osv.osv):
-    _inherit = 'product.product'
+class stock_warehouse_orderpoint(osv.osv):
+    _inherit = 'stock.warehouse.orderpoint'
+    
+    def _get_virtual_available(self, cr, uid, ids, name, arg,context={}):
+        logger = netsvc.Logger()
+        orderpoint_obj = self.pool.get('stock.warehouse.orderpoint')
+        product_obj = self.pool.get('product.product')
+        if not ids:
+            ids = self.search(cr, uid, [])
+        res = {}.fromkeys(ids, 0.0)
+        if not ids:
+            return res
+        logger.notifyChannel('addon.'+self._name,netsvc.LOG_INFO,'ids:%s'%ids)
+        for id in ids:
+            orderpoint_obj_product_id = orderpoint_obj.read(cr, uid, id, ['product_id'])['id']
+            logger.notifyChannel('addon.'+self._name,netsvc.LOG_INFO,'orderpoint_obj_product_id:%s'%orderpoint_obj_product_id)
+            res[id] = product_obj.read(cr, uid, orderpoint_obj_product_id, ['virtual_available'])['virtual_available']
+        logger.notifyChannel('addon.'+self._name,netsvc.LOG_INFO,'res:%s'%res)
+        return res
+        
+    _columns = {
+                'virtual_available':fields.function(_get_virtual_available,method = True, type='float', string = 'Virtual Stock'),
+    }
 
     def search(self, cr, user, args, offset= 0, limit=None, order=None, context=None, count=False):
+        logger = netsvc.Logger()
         if context and context.get('srtock_alarm'):
             #mrp/scheduler.py
+            op_ids = []
             orderpoint_obj = self.pool.get('stock.warehouse.orderpoint')
             location_obj = self.pool.get('stock.location')
             ids = orderpoint_obj.search(cr, user, [
@@ -42,8 +66,10 @@ class product_product(osv.osv):
                         op.location_id.id, [op.product_id.id],
                         {'uom': op.product_uom.id})[op.product_id.id]
                 if prods < op.product_min_qty:
-                    args.append(('id','in',str(op.product_id.id)))
+                    op_ids.append(op.id)
+                args.append(('id','in',op_ids))
             if len(args) <= 0:
                args = [('id','in','0')]
-        return super(product_product, self).search(cr, user, args, offset=offset, limit=limit, order=order, context=context, count=count)
-product_product()
+            logger.notifyChannel('addon.'+self._name,netsvc.LOG_INFO,'args:%s'%args)
+        return super(stock_warehouse_orderpoint, self).search(cr, user, args, offset=offset, limit=limit, order=order, context=context, count=count)
+stock_warehouse_orderpoint()
