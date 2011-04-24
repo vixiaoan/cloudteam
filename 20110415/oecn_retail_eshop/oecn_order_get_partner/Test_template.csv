@@ -1,0 +1,11 @@
+db_id,id,note
+8,sale.test_order_2,name:Tiffany1|mobile:12345|phone:54321|email:example@example.com|street:1street|city:2city
+9,sale.bug461801,name:Tiffany2|mobile:12345|phone:54321|email:example@example.com|street:1street
+10,sale.bug399817,name:Tiffany3|mobile:12345|phone:54321|email:example@example.com
+5,sale.order5,name:Tiffany4|mobile:12345|phone:54321
+4,sale.order4,name:Tiffany5|mobile:12345
+3,sale.order3,name:Tiffany6
+2,sale.order2,name:Tiffany7|mobile:12345|phone:54321|email:example@example.com|street:1street|city:8city
+1,sale.order,name:Tiffany8|mobile:12345|phone:54321|email:example@example.com|street:1street|city:9city
+7,sale.smoke_test_sale_order_chained,name:Tiffany9|mobile:12345|phone:54321|email:example@example.com|street:1street|city:10city
+6,sale.smoke_test_sale_order,

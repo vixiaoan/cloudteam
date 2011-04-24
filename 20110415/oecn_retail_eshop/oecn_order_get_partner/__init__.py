@@ -1,0 +1,1 @@
+import order_get_partner
