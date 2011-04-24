@@ -11,9 +11,10 @@ class product_product(osv.osv):
         opener = urllib2.build_opener()
         res = self.read(cursor, user, ids, ['image_link'])
         imageLink = res[0]['image_link']
-        pic = base64.encodestring(opener.open(imageLink).read())
-        for id in ids:
-            image[id] = pic
+        if imageLink:
+            pic = base64.encodestring(opener.open(imageLink).read())
+            for id in ids:
+                image[id] = pic
         return image
 
     _columns = {
