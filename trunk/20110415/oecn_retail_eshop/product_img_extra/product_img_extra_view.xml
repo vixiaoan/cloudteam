@@ -8,7 +8,7 @@
 			<field name="inherit_id" ref="product.product_normal_form_view" />
 			<field name="arch" type="xml">
 				<field name="name" position="before">
-					<field name="image" widget="image" nolabel="1" img_width="300" img_height="300" />
+					<field name="image" widget="image" nolabel="1" img_width="168" img_height="168" colspan="4"/>
 					<field name="image_link" />
 				</field>
 			</field>
