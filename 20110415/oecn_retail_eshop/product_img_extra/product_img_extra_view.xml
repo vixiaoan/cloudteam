@@ -2,14 +2,14 @@
 <openerp>
 	<data>
 		<record id="product_img_view" model="ir.ui.view">
-			<field name="name">product.normal.form</field>
-			<field name="model">product.product</field>
+			<field name="name">product.template.product.form</field>
+			<field name="model">product.template</field>
 			<field name="type">form</field>
-			<field name="inherit_id" ref="product.product_normal_form_view" />
+			<field name="inherit_id" ref="product.product_template_form_view" />
 			<field name="arch" type="xml">
 				<field name="name" position="before">
 					<field name="image" widget="image" nolabel="1" img_width="168" img_height="168" colspan="4"/>
-					<field name="image_link" />
+					<field name="image_link" colspan="4"/>
 				</field>
 			</field>
 		</record>

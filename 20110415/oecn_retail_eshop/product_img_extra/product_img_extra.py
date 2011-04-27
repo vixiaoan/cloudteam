@@ -18,7 +18,7 @@ class product_template_img(osv.osv):
         return image
 
     _columns = {
-        'image_link' : fields.char('ImageLink', size=180),
+        'image_link' : fields.char('Image Link', size=180),
         'image' : fields.function(_get_image, method=True, string='Product Image', type='binary', store=False), 
     }
 

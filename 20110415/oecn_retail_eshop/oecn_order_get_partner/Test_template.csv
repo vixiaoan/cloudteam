@@ -1,11 +1,19 @@
-db_id,id,note
-8,sale.test_order_2,name:Tiffany1|mobile:12345|phone:54321|email:example@example.com|street:1street|city:2city
-9,sale.bug461801,name:Tiffany2|mobile:12345|phone:54321|email:example@example.com|street:1street
-10,sale.bug399817,name:Tiffany3|mobile:12345|phone:54321|email:example@example.com
-5,sale.order5,name:Tiffany4|mobile:12345|phone:54321
-4,sale.order4,name:Tiffany5|mobile:12345
-3,sale.order3,name:Tiffany6
-2,sale.order2,name:Tiffany7|mobile:12345|phone:54321|email:example@example.com|street:1street|city:8city
-1,sale.order,name:Tiffany8|mobile:12345|phone:54321|email:example@example.com|street:1street|city:9city
-7,sale.smoke_test_sale_order_chained,name:Tiffany9|mobile:12345|phone:54321|email:example@example.com|street:1street|city:10city
-6,sale.smoke_test_sale_order,
+Date Ordered,Invoice Address/Database ID,Invoice on,Order Reference,Packing Policy,Pricelist/Database ID,Shipping Address/Database ID,Shipping Policy,Shop/Database ID,Customer/Database ID,Ordering Contact/Database ID,note,note,note,note
+销售日期,发票地址ID,,,,价钱,发货地址ID,,订单商店ID,用户名,城市,街道,电话,手机,
+2011-4-26,12,Shipped Quantities,test_order_2,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany1,GuangZhou,1234street1,123456,54321,
+2011-4-27,13,Shipped Quantities,test_order_3,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany2,GuangZhou,1234street2,123456,54321,
+2011-4-28,14,Shipped Quantities,test_order_4,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany3,GuangZhou,1234street3,123456,54321,
+2011-4-29,15,Shipped Quantities,test_order_5,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany4,GuangZhou,1234street4,123456,54321,
+2011-4-30,16,Shipped Quantities,test_order_6,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany5,GuangZhou,1234street5,123456,54321,
+2011-5-1,17,Shipped Quantities,test_order_7,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany6,GuangZhou,1234street6,123456,54321,
+2011-5-2,18,Shipped Quantities,test_order_8,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany7,GuangZhou,1234street7,123456,54321,
+2011-5-3,19,Shipped Quantities,test_order_9,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany8,GuangZhou,1234street8,123456,54321,
+2011-5-4,20,Shipped Quantities,test_order_10,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany9,GuangZhou,1234street9,123456,54321,
+2011-5-5,21,Shipped Quantities,test_order_11,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany10,GuangZhou,1234street10,123456,54321,
+2011-5-6,22,Shipped Quantities,test_order_12,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany11,GuangZhou,1234street11,123456,54321,
+2011-5-7,23,Shipped Quantities,test_order_13,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany12,GuangZhou,1234street12,123456,54321,
+2011-5-8,24,Shipped Quantities,test_order_14,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany13,GuangZhou,1234street13,123456,54321,
+2011-5-9,25,Shipped Quantities,test_order_15,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany14,GuangZhou,1234street14,123456,54321,
+2011-5-10,26,Shipped Quantities,test_order_16,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany15,GuangZhou,1234street15,123456,54321,
+2011-5-11,27,Shipped Quantities,test_order_17,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany16,GuangZhou,1234street16,123456,54321,
+2011-5-12,28,Shipped Quantities,test_order_18,Partial Delivery,1,11,Invoice from the Packing,1,Tiffany17,GuangZhou,1234street17,123456,54321,
