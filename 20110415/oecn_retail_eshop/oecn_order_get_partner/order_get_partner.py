@@ -1,3 +1,4 @@
+# -*- encoding: utf-8 -*-
 from osv import osv, fields
 import tools
 
