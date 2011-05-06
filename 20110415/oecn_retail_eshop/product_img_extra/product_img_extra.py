@@ -1,18 +1,34 @@
 from osv import osv, fields
-import urllib2
+from urllib2 import Request, urlopen
 import base64
+import re
 class product_template_img(osv.osv):
     _name = 'product.template'
     _inherit = 'product.template'
     _description = 'Product Extra Image'
 
+    def is_url(self, url):
+        regexStr = '^((https|http|ftp|rtsp|mms)?://)+'
+        regex = re.compile(regexStr)
+        print regex.match(url)
+        return regex.match(url)
+        
     def _get_image(self, cursor, user, ids, name, arg, context=None):
         image = {}
-        opener = urllib2.build_opener()
         res = self.read(cursor, user, ids, ['image_link'])
         image_link = res[0]['image_link']
         if image_link:
-            pic = base64.encodestring(opener.open(image_link).read())
+            if not self.is_url(image_link):
+                raise osv.except_osv('URL Error','URL should start with https|http|ftp|rtsp|mms.')
+            req = Request(image_link)
+            try:
+                respose = urlopen(req)
+            except IOError, e:
+                if hasattr(e, 'reason'):
+                    raise osv.except_osv('URL Error','We failed to reach a server.' + 'Reason: ', e.reason)
+                elif hasattr(e, 'code'):
+                    raise osv.except_osv('URL Error','The server couldn\'t fulfill the request.\n' + 'Error code: ', e.code)
+            pic = base64.encodestring(respose.read())
             for id in ids:
                 image[id] = pic
         return image
