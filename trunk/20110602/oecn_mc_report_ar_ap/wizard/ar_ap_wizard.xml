@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <!-- 应收应付账款报表 -->
+        <record id="view_ar_ap_report_wizard" model="ir.ui.view">
+            <field name="name">oecn_mc_report_ar_ap.ar_ap_report_wizard</field>
+            <field name="model">oecn_mc_report_ar_ap.ar_ap_report_wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="AR AP Report">
+                    <field name="date_start" />
+                    <field name="date_end" />
+                    <group col="4" colspan="4">
+                        <button icon="gtk-ok" name="print_report" string="Print" type="object"/>
+                        <button icon="gtk-cancel" special="cancel" string="Cancel"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <!--产品动作定义 -->
+        <record id="action_report_ar_ap" model="ir.actions.act_window">
+            <field name="name">AR AP Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">oecn_mc_report_ar_ap.ar_ap_report_wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+            action="action_report_ar_ap"
+            icon="STOCK_PRINT"
+            id="menu_action_ar_ap_report_form"
+            parent="account.menu_finance_reporting"
+            sequence="14"
+        />
+
+    </data>
+</openerp>
