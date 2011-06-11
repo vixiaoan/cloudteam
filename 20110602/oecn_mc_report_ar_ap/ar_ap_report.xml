@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <report auto="False" id="ar_ap_report" 
+            model="account.invoice" name="oecn_mc_report_ar_ap.ar_ap_report"  
+            file="oecn_mc_report_ar_ap/report/ar_ap_report.odt" 
+            string="AR AP Report" report_type="odt" />
+    </data>
+</openerp>
