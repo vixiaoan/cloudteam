@@ -139,7 +139,11 @@ class ar_ap_report_parser(report_sxw.rml_parse):
                 currency['currency_name'] = currency_obj.name
                 currencys.append(currency)
         self.localcontext['currencys'] = currencys
-
+        #pre-order
+        pre_order_ids = account_invoice_pool.search(self.cr, self.uid, [('state','=','draft'),('type','=','in_invoice')],order="date_due")
+        pre_orders = account_invoice_pool.browse(self.cr, self.uid, pre_order_ids, context=None)
+        self.localcontext['pre_orders'] = pre_orders
+        
 report_sxw.report_sxw('report.oecn_mc_report_ar_ap.ar_ap_report',
                       'account.invoice',
                       'addons/oecn_mc_report_ar_ap/report/ar_ap_report.odt',parser=ar_ap_report_parser)
