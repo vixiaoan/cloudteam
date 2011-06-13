@@ -72,15 +72,18 @@ class ar_ap_report_parser(report_sxw.rml_parse):
         self.localcontext['date_end'] = self.date_end
         
         user_pool = self.pool.get('res.users')
+        purchase_order_pool = self.pool.get('purchase.order')
+        currency_pool = self.pool.get('res.currency')
+        account_invoice_pool = self.pool.get('account.invoice')
+        sale_order_pool = self.pool.get('sale.order')
+        purchase_order_line_pool = self.pool.get('purchase.order.line')
+        
         user_obj = user_pool.browse(self.cr, self.uid, self.user, context=None)
         
         currencys = []
-        currency_pool = self.pool.get('res.currency')
         currency_ids = currency_pool.search(self.cr, self.uid, [])
         currency_objs = currency_pool.browse(self.cr, self.uid, currency_ids, context=None)
         
-        
-        account_invoice_pool = self.pool.get('account.invoice')
 
         for currency_obj in currency_objs:
             currency = {'out_invoices':False,
@@ -97,7 +100,6 @@ class ar_ap_report_parser(report_sxw.rml_parse):
                         'in_invoice_61_90_total':False,
                         'in_invoice_90_total':False,
                         'in_invoice_amount_total':False,
-                        
                         'currency_name':''}
             
             account_out_invoice_by_currency_ids = account_invoice_pool.search(self.cr, self.uid, [('currency_id','=',currency_obj.id),('state','=','open'),('type','=','out_invoice')],order="date_due")
@@ -140,9 +142,30 @@ class ar_ap_report_parser(report_sxw.rml_parse):
                 currencys.append(currency)
         self.localcontext['currencys'] = currencys
         #pre-order
-        pre_order_ids = account_invoice_pool.search(self.cr, self.uid, [('state','=','draft'),('type','=','in_invoice')],order="date_due")
-        pre_orders = account_invoice_pool.browse(self.cr, self.uid, pre_order_ids, context=None)
-        self.localcontext['pre_orders'] = pre_orders
+        pre_order_supplier_invoice_ids = account_invoice_pool.search(self.cr, self.uid, [('state','=','draft'),('type','=','in_invoice')],order="date_due")
+        pre_order_supplier_invoices = account_invoice_pool.browse(self.cr, self.uid, pre_order_supplier_invoice_ids, context=None)
+        
+        pre_orders = []
+        pre_order = {}
+        for pre_order_supplier_invoice in pre_order_supplier_invoices:
+            if pre_order_supplier_invoice.origin:
+                purchase_order_ids = purchase_order_pool.search(self.cr, self.uid, [('name','=',pre_order_supplier_invoice.origin)],order="date_due")
+                purchase_order = purchase_order_pool.browse(self.cr, self.uid, purchase_order_ids, context=None)
+                purchase_order_line_ids = purchase_order_line_pool.search(self.cr, self.uid, [('order_id','=',purchase_order_ids[0])],order="date_due")
+                purchase_order_lines = purchase_order_line_pool.browse(self.cr, self.uid, purchase_order_line_ids, context=None)
+                pre_order['product'] = purchase_order_lines[0].product_id.name
+                #取第一个Purchase Order Line的产品，可能需要修正
+                pre_order['purchase_order'] = purchase_order[0]
+                if purchase_order[0].origin:
+                    sale_order_ids = sale_order_pool.search(self.cr, self.uid, [('name','=',purchase_order[0].origin)],order="date_due")
+                    sale_order = sale_order_pool.browse(self.cr, self.uid, sale_order_ids,  context=None)
+                    pre_order_customer_invoice_ids = account_invoice_pool.search(self.cr, self.uid, [('origin','=',sale_order[0].name)],order="date_due")
+                    if pre_order_customer_invoice_ids:
+                        pre_order_customer_invoices = account_invoice_pool.browse(self.cr, self.uid, pre_order_customer_invoice_ids, context=None)
+                        pre_order['pre_order_customer_invoice'] = pre_order_customer_invoices[0]
+                        pre_orders.append(pre_order)
+        if pre_orders:
+            self.localcontext['pre_orders'] = pre_orders
         
 report_sxw.report_sxw('report.oecn_mc_report_ar_ap.ar_ap_report',
                       'account.invoice',
