@@ -6,6 +6,10 @@
     "category" : u"Reporting",
     'description': """
     AR AP报表模块
+    需要版本：
+    relatorio version 5.5以上
+    genshi version 6.0
+    
      """,
     'author': 'CloudTeam',
     'depends': ['base','account','relatorio_report'],
