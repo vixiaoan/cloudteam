@@ -166,6 +166,8 @@ class ar_ap_report_parser(report_sxw.rml_parse):
                         pre_orders.append(pre_order)
         if pre_orders:
             self.localcontext['pre_orders'] = pre_orders
+        else:
+            self.localcontext['pre_orders'] = False
         
 report_sxw.report_sxw('report.oecn_mc_report_ar_ap.ar_ap_report',
                       'account.invoice',
