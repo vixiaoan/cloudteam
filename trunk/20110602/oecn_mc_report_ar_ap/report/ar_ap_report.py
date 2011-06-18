@@ -70,6 +70,7 @@ class ar_ap_report_parser(report_sxw.rml_parse):
         self.date_start = data['form']['date_start']
         self.date_end = data['form']['date_end']
         self.localcontext['date_end'] = self.date_end
+        self.localcontext['title'] = ''
         
         user_pool = self.pool.get('res.users')
         purchase_order_pool = self.pool.get('purchase.order')
@@ -77,6 +78,7 @@ class ar_ap_report_parser(report_sxw.rml_parse):
         account_invoice_pool = self.pool.get('account.invoice')
         sale_order_pool = self.pool.get('sale.order')
         purchase_order_line_pool = self.pool.get('purchase.order.line')
+        rml_obj=report_sxw.rml_parse(self.cr, self.uid, account_invoice_pool._name,context={})
         
         user_obj = user_pool.browse(self.cr, self.uid, self.user, context=None)
         
@@ -84,6 +86,9 @@ class ar_ap_report_parser(report_sxw.rml_parse):
         currency_ids = currency_pool.search(self.cr, self.uid, [])
         currency_objs = currency_pool.browse(self.cr, self.uid, currency_ids, context=None)
         
+        #硬编码写定以HKD为主汇率
+        hkd_id = currency_pool.search(self.cr, self.uid, [('name','=','HKD')])
+        hkd_objs = currency_pool.browse(self.cr, self.uid, hkd_id, context=None)
 
         for currency_obj in currency_objs:
             currency = {'out_invoices':False,
@@ -109,7 +114,7 @@ class ar_ap_report_parser(report_sxw.rml_parse):
                 for out_invoice in out_invoices:
                     date_diff = self.get_date_diff(out_invoice.date_due or self.date_end,self.date_end)
                     if date_diff <=0:
-                        currency['out_invoice_current_total'] = currency['in_invoice_current_total'] + out_invoice.amount_total
+                        currency['out_invoice_current_total'] = currency['out_invoice_current_total'] + out_invoice.amount_total
                     elif 1 <= date_diff <= 30:
                         currency['out_invoice_1_30_total'] = currency['out_invoice_1_30_total'] + out_invoice.amount_total
                     elif 31 <= date_diff <= 60:
@@ -139,6 +144,11 @@ class ar_ap_report_parser(report_sxw.rml_parse):
                     
             if currency['out_invoices'] or currency['in_invoices']:
                 currency['currency_name'] = currency_obj.name
+                #报表头现在硬编码HKD为标准
+                context = {}
+                context['date']=self.date_end
+                rate = currency_pool._get_conversion_rate(self.cr, self.uid, hkd_objs[0], currency_obj,context)
+                self.localcontext['title'] = self.localcontext['title'] + str(currency_obj.name) +'@ '+str(rml_obj.formatLang(rate)) +' '
                 currencys.append(currency)
         self.localcontext['currencys'] = currencys
         #pre-order
