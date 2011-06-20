@@ -11,7 +11,7 @@
     genshi version 6.0
     
      """,
-    'author': 'CloudTeam',
+    'author': 'CloudTeam<Joshua,popkar77@gmail.com>',
     'depends': ['base','account','relatorio_report'],
     'init_xml': [],
     'update_xml': [
