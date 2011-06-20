@@ -72,7 +72,6 @@ class ar_ap_report_parser(report_sxw.rml_parse):
         self.localcontext['date_end'] = self.date_end
         self.localcontext['title'] = ''
         
-        user_pool = self.pool.get('res.users')
         purchase_order_pool = self.pool.get('purchase.order')
         currency_pool = self.pool.get('res.currency')
         account_invoice_pool = self.pool.get('account.invoice')
@@ -80,7 +79,6 @@ class ar_ap_report_parser(report_sxw.rml_parse):
         purchase_order_line_pool = self.pool.get('purchase.order.line')
         rml_obj=report_sxw.rml_parse(self.cr, self.uid, account_invoice_pool._name,context={})
         
-        user_obj = user_pool.browse(self.cr, self.uid, self.user, context=None)
         
         currencys = []
         currency_ids = currency_pool.search(self.cr, self.uid, [])
