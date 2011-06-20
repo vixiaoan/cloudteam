@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <report auto="False" id="po_report" 
+            model="purchase.order" name="oecn_mc_report_po"  
+            file="oecn_mc_report_po/report/po_report.odt" 
+            string="PO Report" report_type="odt" />
+    </data>
+</openerp>
