@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <report auto="False" id="cash_report" 
+            model="res.partner" name="oecn_mc_report.cash_report"  
+            file="oecn_mc_report/report/cash_report.odt" 
+            string="Cash Report" report_type="odt" />
+
+    </data>
+</openerp>

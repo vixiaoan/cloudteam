@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <!-- 现金报表 -->
+        <record id="view_cash_report_wizard" model="ir.ui.view">
+            <field name="name">oecn_mc_report.cash_report_wizard</field>
+            <field name="model">oecn_mc_report.cash_report_wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Cash Report">
+                    <field name="date_start" />
+                    <field name="date_end" />
+                    <group col="4" colspan="4">
+                        <button icon="gtk-ok" name="compute_hours" string="OK" type="object"/>
+                        <button icon="gtk-cancel" special="cancel" string="Cancel"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <!--产品动作定义 -->
+        <record id="action_report_cash" model="ir.actions.act_window">
+            <field name="name">Cash Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">oecn_mc_report.cash_report_wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+            action="action_report_cash"
+            icon="STOCK_PRINT"
+            id="menu_action_cash_report_form"
+            parent="account.menu_finance_reporting"
+            sequence="16"
+            groups="account.group_account_user,account.group_account_manager"
+        />
+
+    </data>
+</openerp>
