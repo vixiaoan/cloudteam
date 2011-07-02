@@ -3,7 +3,7 @@
 {
     'name': 'OECN mc report PO report',
     'version': '1.0',
-    "category" : u"Reporting",
+    "category" : "Generic Modules/Sales & Purchases",
     'description': """
     PO报表模块
     需要版本：
@@ -11,7 +11,7 @@
     genshi version 6.0
     
      """,
-    'author': 'CloudTeam<Joshua,popkar77@gmail.com>',
+    'author': 'Joshua',
     'depends': ['base','account','relatorio_report','purchase'],
     'init_xml': [],
     'update_xml': [
