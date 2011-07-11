@@ -12,6 +12,7 @@
     'init_xml': [],
     'update_xml': [
         'invoice_report.xml',
+        'wizard/invoice_report_wizard.xml',
     ],
     'demo_xml': [],
     'installable': True,
