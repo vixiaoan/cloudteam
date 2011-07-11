@@ -11,7 +11,6 @@ class invoice_report_wizard(osv.osv_memory):
 
     def _get_bankaccount(self, cr, uid, context=None):
         bank_ids =self.pool.get('res.users').browse(cr, uid, uid, context).company_id.partner_id.bank_ids
-        #netsvc.Logger().notifyChannel('A:wizard(bank_ids):',netsvc.LOG_INFO,bank_ids)
         bank = self.pool.get('res.partner.bank')
         res = []
         dup = []
@@ -35,7 +34,6 @@ class invoice_report_wizard(osv.osv_memory):
 
     _columns = {
         'bank_account' : fields.selection(_get_bankaccount, 'Bank Account', required=True),
-	#'add_msg':fields
     }
     
     def print_report(self, cr, uid, ids, context=None):
@@ -51,8 +49,7 @@ class invoice_report_wizard(osv.osv_memory):
             context = {}
         datas = {'ids': context.get('active_ids', [])}
         res = self.read(cr, uid, ids, ['bank_account'], context=context)
-	#netsvc.Logger().notifyChannel('A:print_report(res):',netsvc.LOG_INFO,res)
-	#raise osv.except_osv(str(res),str(res))
+        #raise osv.except_osv(str(res),str(res))
         res = res and res[0] or {}
         datas['form'] = res
         if res.get('id',False):
