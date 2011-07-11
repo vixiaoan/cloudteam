@@ -1,3 +1,3 @@
 # -*- coding: utf-8 -*-
 
-import invoice_report_wizard
+import ar_ap_report_wizard
