@@ -17,23 +17,9 @@
                 </form>
             </field>
         </record>
-        <!--产品动作定义 -->
-        <record id="action_report_invoice" model="ir.actions.act_window">
-            <field name="name">Master Concept Invoice Report</field>
-            <field name="type">ir.actions.act_window</field>
-            <field name="res_model">oecn_mc_report_invoice.invoice_report_wizard</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">form</field>
-            <field name="target">new</field>
-        </record>
-
-        <menuitem
-            action="action_report_invoice"
-            icon="STOCK_PRINT"
-            id="menu_action_invoice_report_form"
-            parent="account.menu_finance_reporting"
-            sequence="16"
-        />
+		<act_window name="Master Concept Invoice Report"  res_model="oecn_mc_report_invoice.invoice_report_wizard"
+			src_model="account.invoice" view_mode="form" target="new" key2="client_action_multi" id="act_mc_invoice_wizard" />
+        
 
     </data>
 </openerp>
