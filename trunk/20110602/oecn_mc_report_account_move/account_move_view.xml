@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <report auto="False" 
+                id="account_move_report" 
+                model="account.move" 
+                name="oecn_mc_report_account_move"  
+                file="oecn_mc_report_account_move/report/account_move_report.odt" 
+                string="Account Move Report" 
+                report_type="odt" />
+    </data>
+</openerp>
