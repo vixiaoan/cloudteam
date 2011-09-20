@@ -32,12 +32,33 @@
             </tree>
         </field>
     </record>
-    
+    <record id ="view_customer_activity_filter" model="ir.ui.view">
+        <field name="name">customer.activity.search</field>
+            <field name="model">customer.activity</field>
+            <field name="type">search</field>
+            <field name="arch" type="xml">
+                <search string="Search Sales Order">
+                    <field name="partner_id" />
+                    <field name="date" />
+                    <field name="point" />
+                    <newline/>
+                    <field name="money" />
+                    <field name="pointdiff" />
+                    <field name="moneydiff" />
+                    <newline/>
+                    <group expand="1" string="Group By...">
+                    <filter string="Partner" icon="terp-project" domain="[]" context="{'group_by':'partner_id'}"/>
+                    <filter string="Date" icon="terp-go-month" domain="[]" context="{'group_by':'date'}"/>
+                    </group>
+                </search>
+            </field>
+    </record>
     <record model="ir.actions.act_window" id="action_customer_activity_setting">
         <field name="name">Customer Activity</field>
         <field name="res_model">customer.activity</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref = "view_customer_activity_filter"/>
     </record>
      <menuitem name="Customer Activity"  id="menu_customer_activity" />
      <menuitem name="Customer Activity"  parent= "menu_customer_activity" id="menu_customer_activity_setting"  action="action_customer_activity_setting"/>
