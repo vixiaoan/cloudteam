@@ -36,6 +36,8 @@ class customer_activity_chart_wiazrd(osv.osv_memory):
         if res.get('partner_status',False):
             condition.append(('partner_status','=',res['partner_status']))
         partner_ids = partner_obj.search(cr, uid, condition)
+        if len(partner_ids)<=0:
+            raise ovs.eccept_osv(('Error!'),('The partners did not meet the conditions.'))
         cr.execute('''SELECT res_partner.name,sum(moneydiff)+sum(pointdiff) 
                         FROM customer_activity 
                         LEFT JOIN res_partner on (customer_activity.partner_id = res_partner.id)
