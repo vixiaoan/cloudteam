@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <!-- Customer Activity Chart -->
+        <record id="view_customer_activity_chart_wizard" model="ir.ui.view">
+            <field name="name">customer_activity_chart_wizard</field>
+            <field name="model">customer_activity_chart_wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Customer Activity Chart">
+                    <field name="date_start" />
+                    <field name="date_end" />
+                    <field name="state_id" />
+                    <field name="city" />
+                    <field name="partner_status" />
+                    <group col="4" colspan="4">
+                        <button icon="gtk-ok" name="print_report" string="Print" type="object"/>
+                        <button icon="gtk-cancel" special="cancel" string="Cancel"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <!--Action -->
+        <record id="action_report_customer_activity_chart" model="ir.actions.act_window">
+            <field name="name">Customer Activity Chart</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">customer_activity_chart_wizard</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+        <menuitem
+            action="action_report_customer_activity_chart"
+            icon="STOCK_PRINT"
+            id="menu_action_customer_activity_chart_form"
+            parent="oecn_jj_customer_activity.menu_customer_activity"
+            sequence="14"
+        />
+    </data>
+</openerp>

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <report auto="False"  id="report_customer_activity_report_chart" model="customer.activity" name="customer.activity" string="Customer Activity Chart"/>
+    </data>
+</openerp>

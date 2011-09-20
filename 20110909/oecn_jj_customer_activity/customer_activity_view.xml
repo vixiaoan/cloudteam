@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+    <record model="ir.ui.view" id="view_customer_activity_form">
+        <field name="name">customer.activity</field>
+        <field name="model">customer.activity</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="customer_activity">
+                <field name="partner_id" />
+                <field name="date" />
+                <field name="point" />
+                <field name="money" />
+                <field name="pointdiff" />
+                <field name="moneydiff" />
+            </form>
+        </field>
+    </record>
+    
+    <record model="ir.ui.view" id="view_customer_activity_tree">
+        <field name="name">customer.activity</field>
+        <field name="model">customer.activity</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree string="customer_activity">
+                <field name="partner_id" />
+                <field name="date" />
+                <field name="point" />
+                <field name="money" />
+                <field name="pointdiff" />
+                <field name="moneydiff" />
+            </tree>
+        </field>
+    </record>
+    
+    <record model="ir.actions.act_window" id="action_customer_activity_setting">
+        <field name="name">Customer Activity</field>
+        <field name="res_model">customer.activity</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+     <menuitem name="Customer Activity"  id="menu_customer_activity" />
+     <menuitem name="Customer Activity"  parent= "menu_customer_activity" id="menu_customer_activity_setting"  action="action_customer_activity_setting"/>
+    </data>
+</openerp>
