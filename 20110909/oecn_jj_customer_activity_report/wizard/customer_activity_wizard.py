@@ -29,8 +29,10 @@ class customer_activity_chart_wiazrd(osv.osv_memory):
         partner_obj = self.pool.get('res.partner')
         address_obj = self.pool.get('res.partner.address')
         
-        res = self.read(cr, uid, ids, ['date_start', 'date_end','state_id','city','partner_status'], context=context)
+        res = self.read(cr, uid, ids, ['date_start', 'date_end','state_id','city','partner_status','partner_id'], context=context)
         res = res and res[0] or {}
+        if context.get('active_model',False)=='res.partner' and context.get('active_ids',False):
+            condition.append(('id','in',context['active_ids']))
         if res.get('city',False):
             condition.append(('city','=',res['city']))
         if res.get('partner_status',False):

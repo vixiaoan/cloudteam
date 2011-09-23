@@ -27,6 +27,7 @@
             <field name="res_model">customer_activity_chart_wizard</field>
             <field name="view_type">form</field>
             <field name="view_mode">form</field>
+            <field name="view_id" ref="view_customer_activity_chart_wizard"/>
             <field name="target">new</field>
         </record>
         <menuitem
@@ -36,5 +37,29 @@
             parent="oecn_jj_customer_activity.menu_customer_activity"
             sequence="14"
         />
+        <!--print from partner-->
+        <record id="view_customer_activity_chart_from_partner_wizard" model="ir.ui.view">
+            <field name="name">customer_activity_chart_from_partner_wizard</field>
+            <field name="model">customer_activity_chart_wizard</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Customer Activity Chart">
+                    <field name="date_start" />
+                    <field name="date_end" />
+                    <group col="4" colspan="4">
+                        <button icon="gtk-ok" name="print_report" string="Print" type="object"/>
+                        <button icon="gtk-cancel" special="cancel" string="Cancel"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <act_window id="action_report_customer_activity_chart_from_partner"
+    		key2="client_print_multi"
+            name="Customer Activity Chart"
+    		res_model="customer_activity_chart_wizard"
+            src_model="res.partner"
+    		view_mode="form" target="new" view_type="form" 
+            view_id="view_customer_activity_chart_from_partner_wizard"/>
     </data>
+    
 </openerp>
