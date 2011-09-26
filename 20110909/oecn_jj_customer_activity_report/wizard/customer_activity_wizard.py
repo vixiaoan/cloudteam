@@ -50,7 +50,7 @@ class customer_activity_chart_wiazrd(osv.osv_memory):
         cr.execute('''SELECT res_partner.name,sum(moneydiff)+sum(pointdiff) \
                         FROM customer_activity \
                         LEFT JOIN res_partner on (customer_activity.partner_id = res_partner.id)\
-                        WHERE partner_id in (%s) \
+                        WHERE customer_activity.partner_id in (%s) \
                         AND customer_activity.date<='%s' AND customer_activity.date>='%s'
                         GROUP BY res_partner.name'''%(",".join(map(str,partner_ids)),res['date_end'],res['date_start']))
         result = cr.fetchall()
