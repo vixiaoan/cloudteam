@@ -17,8 +17,8 @@ class cash_report_wizard(osv.osv_memory):
         return dt.strftime("%Y-%m-%d")
 
     _columns = {
-        'date_start' : fields.date(u'开始日期', required=True),
-        'date_end' : fields.date(u'结束日期', required=True),
+        'date_start' : fields.date(u'Start Date', required=True),
+        'date_end' : fields.date(u'End Date', required=True),
     }
     _defaults = {
         'date_start': _get_default_start_date,
