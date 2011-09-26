@@ -30,7 +30,11 @@ class customer_activity_report(report_int):
                     x_coord = category_coord.T(data, 0), y_range = (0, None),
                     x_axis = axis.X(label="user"),
                     y_axis = axis.Y(label="point"))
-        ar.add_plot(bar_plot.T(data = data, label = "Customer Activity"))
+        ar.add_plot(bar_plot.T(data = data, label = "Customer Activity\n"+\
+                               'From:'+str(datas['condition']['date_start'])+ ' To:'+str(datas['condition']['date_end']+'\n') +\
+                               'Condition:'+ ' City:' + datas['condition'].get('city','') \
+                                           + ' Partner Status:' + datas['condition'].get('partner_status','')\
+                                           + ' State:'+ datas['condition'].get('country','')))
         ar.draw(can)
         can.close()
         self.obj = external_pdf(pdf_string.getvalue())

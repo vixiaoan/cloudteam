@@ -28,6 +28,8 @@ class customer_activity_chart_wiazrd(osv.osv_memory):
         ca_obj = self.pool.get('customer.activity')
         partner_obj = self.pool.get('res.partner')
         address_obj = self.pool.get('res.partner.address')
+        country_obj = self.pool.get('res.country.state')
+        partner_status_obj = self.pool.get('res.partner.status')
         
         res = self.read(cr, uid, ids, ['date_start', 'date_end','state_id','city','partner_status','partner_id'], context=context)
         res = res and res[0] or {}
@@ -37,8 +39,12 @@ class customer_activity_chart_wiazrd(osv.osv_memory):
             condition.append(('city','=',res['city']))
         if res.get('partner_status',False):
             condition.append(('partner_status','=',res['partner_status']))
+            partner_status = partner_status_obj.browse(cr, uid ,res['partner_status'])
+            res['partner_status'] = partner_status.name
         partner_ids = partner_obj.search(cr, uid, condition)
         if res.get('state_id',False):
+            country = country_obj.browse(cr, uid,res['state_id'])
+            res['country'] = country.name
             address_ids = address_obj.search(cr, uid, [('state_id','=',res['state_id']),('partner_id','in',partner_ids)])
             partner_ids = []
             if len(address_ids)>0:
@@ -57,6 +63,7 @@ class customer_activity_chart_wiazrd(osv.osv_memory):
         if len(result) <= 0:
             raise osv.except_osv(('Error!'),('No Data!'))
         datas['form'] = result
+        datas['condition'] = res
         if res.get('id',False):
             datas['ids']=[res['id']]
         return { 'type': 'ir.actions.report.xml',
