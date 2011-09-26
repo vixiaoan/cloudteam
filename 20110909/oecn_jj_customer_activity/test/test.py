@@ -9,4 +9,4 @@ URL = 'http://localhost'
 sock_common = xmlrpclib.ServerProxy(URL+':8069/xmlrpc/common')
 uid = sock_common.login(DBNAME, USERNAME, PWD)
 sock = xmlrpclib.ServerProxy(URL+':8069/xmlrpc/object')
-sock.execute(DBNAME, uid, PWD, 'customer.activity', 'download_data',10000)
+sock.execute(DBNAME, uid, PWD, 'customer.activity', 'download_data',10000,5000)
