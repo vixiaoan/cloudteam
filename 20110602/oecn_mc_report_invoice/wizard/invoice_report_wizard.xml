@@ -17,7 +17,7 @@
                 </form>
             </field>
         </record>
-		<act_window name="Master Concept Invoice Report"  res_model="oecn_mc_report_invoice.invoice_report_wizard"
+		<act_window name="Print Invoice"  res_model="oecn_mc_report_invoice.invoice_report_wizard"
 			src_model="account.invoice" view_mode="form" target="new" key2="client_action_multi" id="act_mc_invoice_wizard" />
         
 
