@@ -101,7 +101,7 @@ class customer_activity(osv.osv):
             if len(ids) > 0:
                 customer_activity = {
                     'partner_id':ids[0],
-                    'date':False,
+                    'date':result[5],
                     'point':result[2] or 0.0,
                     'money':result[1] or 0.0,
                     'pointdiff':result[3] or 0.0,
