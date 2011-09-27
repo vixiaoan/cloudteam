@@ -8,7 +8,7 @@
 
     """,
     "version": "0.1",
-    "depends": ['base', 'report_relatorio', 'account', 'account_accountant'],
+    "depends": ['base', 'relatorio_report', 'account', 'account_accountant'],
     "category" : u"Reporting",
     'description': u"""
     A long description
