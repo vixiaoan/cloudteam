@@ -11,11 +11,12 @@ class customer_activity_chart_wiazrd(osv.osv_memory):
         'city': fields.char('City', size=128),
         'partner_status': fields.many2one('res.partner.status','Partner Status'),
     }
+
     
     def print_report(self, cr, uid, ids, context=None):
         """
         print the report
-        @param self: The object pointer.
+        @param self: The object pointer.<F8>
         @param cr: A database cursor
         @param uid: ID of the user currently logged in
         @param context: A standard dictionary
@@ -64,8 +65,10 @@ class customer_activity_chart_wiazrd(osv.osv_memory):
             raise osv.except_osv(('Error!'),('No Data!'))
         datas['form'] = result
         datas['condition'] = res
+        
         if res.get('id',False):
             datas['ids']=[res['id']]
+        datas['model'] = 'res.partner' 
         return { 'type': 'ir.actions.report.xml',
             'report_name': 'customer.activity',
             'datas': datas, }
