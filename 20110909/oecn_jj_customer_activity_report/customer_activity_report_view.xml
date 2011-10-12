@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
-        <report auto="False"  id="report_customer_activity_report_chart" model="res.partner" name="customer.activity" string="Customer Activity Chart" menu="False"/>
+        <report auto="False"  
+                id="report_customer_activity_report_chart" 
+                model="res.partner" 
+                name="customer.activity" 
+                string="Customer Activity Chart" 
+                menu="True" 
+                rml="oecn_jj_customer_activity_report/report/customer_activity_report.odt"/>
+        <record model="ir.actions.report.xml" id="report_customer_activity_report_chart">
+            <field name="report_type">oo-pdf</field>
+        </record>
     </data>
 </openerp>

@@ -1,0 +1,38 @@
+options:
+    width: 1800
+    height: 1800
+    background:
+        hide: true
+    legend:
+        hide: true
+    padding:
+        bottom: 50
+        left: 120
+        right: 30
+        top: 20
+    axis:
+        labelFont: 'WenQuanYi Zen Hei Sharp'
+        labelFontSize: 40
+        tickFont: 'WenQuanYi Zen Hei Sharp'
+        tickFontSize: 30
+        x:
+            label: '客户活跃度'
+            rotate: 25
+            ticks:
+                {% for idx,line in enumerate(lines) %}
+                - v: $idx 
+                  label: ${line[0]}
+                {% end %}
+        y:
+            rotate: 25
+            
+chart:
+    titleFont: 'WenQuanYi Zen Hei Sharp'
+    type: vbar
+    output_type: png
+    dataset:
+      - - ${('客户')}
+        -
+            {% for idx,line in enumerate(lines) %}
+            - [$idx, ${line[1]}]
+            {% end %}

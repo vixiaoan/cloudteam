@@ -9,7 +9,7 @@ Customer Activity Chart
     """,
     'author': 'Joshua<popkar77@gmail.com>',
     'website': 'http://www.openerp-china.org',
-    'depends': ['oecn_jj_customer_activity',],
+    'depends': ['oecn_jj_customer_activity','pxgo_openoffice_reports'],
     'web_depends': [''],
     'init_xml': [],
     'update_xml': [
