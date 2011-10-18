@@ -83,14 +83,16 @@ class customer_activity(osv.osv):
         partners = partner_obj.browse(cr, uid, partner_ids)
         partner_name = []
         for partner in partners:
-            partner_name.append(partner.name) 
+            partner_name.append(((partner.name).upper()).encode('utf-8'))
+        
         c=db.cursor()  
         c.execute('''SELECT common_member.username,money,point,pointdiff,moneydiff,postdate \
                      FROM point_day_log \
                      LEFT JOIN common_member ON (point_day_log.uid = common_member.uid ) \
                      WHERE postdate = '%s' \
-                     AND common_member.username IN (%s)'''%(today - oneday,'"'+'","'.join(partner_name)+'"'))
+                     AND UPPER(common_member.username) IN (%s)'''%(today - oneday,'"'+'","'.join(partner_name)+'"'))
         results = c.fetchall()
+        print results
         email = {}
         body = []
         if len(results) <= 0:

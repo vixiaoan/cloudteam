@@ -14,17 +14,17 @@ options:
         labelFont: 'WenQuanYi Zen Hei Sharp'
         labelFontSize: 40
         tickFont: 'WenQuanYi Zen Hei Sharp'
-        tickFontSize: 30
+        tickFontSize: 50
         x:
             label: '客户活跃度'
-            rotate: 25
+            rotate: 90
             ticks:
                 {% for idx,line in enumerate(lines) %}
                 - v: $idx 
                   label: ${line[0]}
                 {% end %}
-        y:
-            rotate: 25
+        
+            
             
 chart:
     titleFont: 'WenQuanYi Zen Hei Sharp'
