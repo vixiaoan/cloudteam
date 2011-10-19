@@ -15,6 +15,8 @@ options:
         labelFontSize: 40
         tickFont: 'WenQuanYi Zen Hei Sharp'
         tickFontSize: 50
+        y:
+            tickPrecision: -2
         x:
             label: '客户活跃度'
             rotate: 90
