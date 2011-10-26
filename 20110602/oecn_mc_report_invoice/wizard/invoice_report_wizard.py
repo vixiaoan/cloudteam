@@ -52,8 +52,8 @@ class invoice_report_wizard(osv.osv_memory):
         #raise osv.except_osv(str(res),str(res))
         res = res and res[0] or {}
         datas['form'] = res
-        if res.get('id',False):
-            datas['ids']=[res['id']]
+#        if res.get('id',False):
+#            datas['ids']=[res['id']]
         return { 'type': 'ir.actions.report.xml',
             'report_name': 'oecn_mc_report_invoice.invoice_report',
             'datas': datas, }

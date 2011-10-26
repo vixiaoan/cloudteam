@@ -4,6 +4,6 @@
         <report auto="False" id="mc_invoice_report" 
             model="account.invoice" name="oecn_mc_report_invoice.invoice_report"  
             file="oecn_mc_report_invoice/report/invoice_report.odt" multi="True"
-            string="Master Concept Invoice Report" report_type="odt" menu="False"/>
+            string="Print Invoice" report_type="odt" menu="False"/>
     </data>
 </openerp>
