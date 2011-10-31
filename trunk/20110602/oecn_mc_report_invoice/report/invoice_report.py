@@ -20,7 +20,7 @@ class invoice_report(report_sxw.rml_parse):
             for r in bank.browse(self.cr, self.uid, [b['id']], {}):
                 #raise osv.except_osv(str(dup.count(r.bank.code)),str(res.count((r.id,r.bank.code))))
                 if r.bank.code == bkname or r.bank.name == bkname:
-                    res += [(r.bank.name,r.bank.bic or '',r.acc_number, r.name and '(' + r.name + ')' or '')]
+                    res += [(r.bank.name,r.bank.bic or '',r.acc_number, r.name and '(' + r.name + ')' or ''), r.bank.city or '', r.bank.street or '']
         #raise osv.except_osv(str(res),str(bkname))
         return res
 
