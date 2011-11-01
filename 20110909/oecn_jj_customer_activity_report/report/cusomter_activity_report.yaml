@@ -10,6 +10,9 @@ options:
         left: 120
         right: 30
         top: 20
+    yvals:
+        show: True
+        fontSize: 20
     axis:
         labelFont: 'WenQuanYi Zen Hei Sharp'
         labelFontSize: 40
