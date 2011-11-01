@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+        <report auto="False" id="pl_report" 
+            model="account.account" name="oecn_account_report.pl"  
+            file="oecn_account_report/report/pl.odt" 
+            string="Profit and Loss Report" report_type="odt" menu="False"/>
+        <report auto="False" id="cf_report" 
+            model="account.account" name="oecn_account_report.cf"  
+            file="oecn_account_report/report/cashflow.odt" 
+            string="Cash Flow Report" report_type="odt" menu="False"/>
+        <report auto="False" id="cogs_report" 
+            model="account.account" name="oecn_account_report.cogs"  
+            file="oecn_account_report/report/cogs.odt" 
+            string="Cost of Goods Sale Report" report_type="odt" menu="False"/>
+        <record id="view_oecn_account_report_wizard_cf" model="ir.ui.view">
+            <field name="name">oecn_account_report.report_wizard_cf</field>
+            <field name="model">oecn_account_report.report_wizard_cf</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Cash Flow Report">
+                    <field name="period" />
+                    <group col="4" colspan="4">
+                        <button icon="gtk-ok" name="print_report" string="Print" type="object"/>
+                        <button icon="gtk-cancel" special="cancel" string="Cancel"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_oecn_account_report_cf" model="ir.actions.act_window">
+            <field name="name">Cash Flow Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">oecn_account_report.report_wizard_cf</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+            action="action_oecn_account_report_cf"
+            icon="STOCK_PRINT"
+            id="menu_action_oecn_account_report_cf"
+            parent="account.menu_finance_reporting"
+            sequence="15"
+        />
+        
+        <record id="view_oecn_account_report_wizard_pl" model="ir.ui.view">
+            <field name="name">oecn_account_report.report_wizard_pl</field>
+            <field name="model">oecn_account_report.report_wizard_pl</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Profit Loss Report">
+                    <field name="period" />
+                    <group col="4" colspan="4">
+                        <button icon="gtk-ok" name="print_report" string="Print" type="object"/>
+                        <button icon="gtk-cancel" special="cancel" string="Cancel"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_oecn_account_report_pl" model="ir.actions.act_window">
+            <field name="name">Proft Loss Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">oecn_account_report.report_wizard_pl</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+            action="action_oecn_account_report_pl"
+            icon="STOCK_PRINT"
+            id="menu_action_oecn_account_report_pl"
+            parent="account.menu_finance_reporting"
+            sequence="16"
+        />
+        
+        <record id="view_oecn_account_report_wizard_cogs" model="ir.ui.view">
+            <field name="name">oecn_account_report.report_wizard_cogs</field>
+            <field name="model">oecn_account_report.report_wizard_cogs</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form string="Cost of Goods Sale Report">
+                    <field name="period" />
+                    <group col="4" colspan="4">
+                        <button icon="gtk-ok" name="print_report" string="Print" type="object"/>
+                        <button icon="gtk-cancel" special="cancel" string="Cancel"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+        <record id="action_oecn_account_report_cogs" model="ir.actions.act_window">
+            <field name="name">Cost of Goods Sale Report</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">oecn_account_report.report_wizard_cogs</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem
+            action="action_oecn_account_report_cogs"
+            icon="STOCK_PRINT"
+            id="menu_action_oecn_account_report_cogs"
+            parent="account.menu_finance_reporting"
+            sequence="17"
+        />
+    </data>
+</openerp>
