@@ -4,7 +4,7 @@ import time
 from report import report_sxw
 from osv import osv
 
-LINES_PER_PAGE = 16
+LINES_PER_PAGE = 17
 
 class invoice_report(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
@@ -35,10 +35,14 @@ class invoice_report(report_sxw.rml_parse):
             lines.append(line)
         
         sum_height = 3
+        mod = len(lines) % LINES_PER_PAGE
+        free_lines = LINES_PER_PAGE - mod
 
-        last_lines = LINES_PER_PAGE - (len(lines) + sum_height) % LINES_PER_PAGE
-
-        empty_lines = (LINES_PER_PAGE - 3 - last_lines)
+        empty_lines = 0
+        if free_lines - mod > sum_height: #如果在一页里面够放汇总
+            empty_lines = free_lines - sum_height
+        else: #不够放汇总
+            empty_lines = free_lines + (LINES_PER_PAGE - sum_height)
 
         for n in range(0, empty_lines):
             line = ('', '', '' , '')
