@@ -4,12 +4,47 @@ import time
 from report import report_sxw
 from osv import osv
 
+LINES_PER_PAGE = 16
+
 class invoice_report(report_sxw.rml_parse):
     def __init__(self, cr, uid, name, context):
         super(invoice_report, self).__init__(cr, uid, name, context)
         self.localcontext.update({
             'time': time,
+            'lines': self._lines
         })
+
+    def _lines(self, invoice):
+        lines = []
+        for il in invoice.invoice_line:
+            note_lines = il.note.split('\n')            
+            if len(note_lines) > 0:
+                line = (il.quantity, note_lines[0], self.formatLang(il.price_unit), self.formatLang(il.price_subtotal))
+                lines.append(line)
+            else:
+                line = (il.quantity, '<EMPTY>', self.formatLang(il.price_unit), self.formatLang(il.price_subtotal))
+                lines.append(line)
+
+            if len(note_lines) > 1:
+                for nl in note_lines[1:]:
+                    line = ('', nl, '', '')
+                    lines.append(line)
+
+            #插入一个空行分隔
+            line = ('', '', '' , '')
+            lines.append(line)
+        
+        sum_height = 3
+
+        last_lines = LINES_PER_PAGE - (len(lines) + sum_height) % LINES_PER_PAGE
+
+        empty_lines = (LINES_PER_PAGE - 3 - last_lines)
+
+        for n in range(0, empty_lines):
+            line = ('', '', '' , '')
+            lines.append(line)
+
+        return lines
 
     def _get_bankaccounts(self):
         bank_ids =self.pool.get('res.users').browse(self.cr, self.uid, self.uid, {}).company_id.partner_id.bank_ids
