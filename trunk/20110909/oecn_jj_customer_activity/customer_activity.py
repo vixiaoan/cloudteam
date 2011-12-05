@@ -23,15 +23,15 @@ class customer_activity(osv.osv):
     _name = 'customer.activity'
     _discription = 'Customer Activity'
     _columns = {
-        'partner_id':fields.many2one('res.partner', 'partner', required=True),
-        'date':fields.date('date'),
+        'partner_id':fields.many2one('res.partner', 'Partner', required=True),
+        'date':fields.date('Date'),
         'point':fields.float('Point'),
         'money':fields.float('Money'),
         'pointdiff':fields.float('Pointdiff'),
         'moneydiff':fields.float('Moneydiff'),
     }
 
-    def generate_mail(self, cr, uid, body_text='', mail_type='', mail_to =False, context={}):
+    def _generate_mail(self, cr, uid, body_text='', mail_type='', mail_to =False, context={}):
         '''生成邮件，并且发送'''
         eta_obj = self.pool.get('email_template.account')
         etm_obj = self.pool.get('email_template.mailbox')
@@ -40,12 +40,12 @@ class customer_activity(osv.osv):
 
         eta_ids = eta_obj.search(cr, uid, [])
         if len(eta_ids) <= 0:
-        #Get the email account            
+            #Get the email account            
             logger.notifyChannel('addons.'+self._name,netsvc.LOG_ERROR,'There is no effective email account')
             return False
 
         email={
-            'subject':'[' + str(today) + '][Customer Avticity]' + mail_type,
+            'subject':'[' + str(today.strftime('%Y-%m-%d')) + '][Customer Avticity]' + mail_type,
             'email_to':mail_to,
             'body_text':body_text,
             'account_id':eta_ids[0],
@@ -55,12 +55,12 @@ class customer_activity(osv.osv):
         etm_obj.send_this_mail(cr, uid, [etm_id])
         return True
 
-    def download_data(self, cr, uid, point=0, money=0, mail1=[], mail2=[],  context=None):
+    def download_data(self, cr, uid, point=0, money=0, formal_mail=[], potential_mail=[],  context=None):
         '''从网站上下载数据
            @param point:客户的point少于这个这个值
            @param money:客户的money少于这个这个值
-           @param mail1:正式客户的数据发送到这些邮箱
-           @param mail2：潜在客户的数据饭送到这些邮箱
+           @param formal_mail:正式客户的数据发送到这些邮箱
+           @param potential_mail：潜在客户的数据饭送到这些邮箱
         '''
         logger = netsvc.Logger()
         partner_obj = self.pool.get('res.partner')
@@ -72,7 +72,7 @@ class customer_activity(osv.osv):
         today = datetime.date.today()
         oneday = datetime.timedelta(days=1)
 
-        admin_user = user_obj.browse(cr, uid, uid)
+        admin_user = user_obj.browse(cr, 1, 1)
         admin_email = admin_user.address_id.email
         #管理员邮箱，请务必设定!否则错误信息不能发送
         try:
@@ -81,7 +81,7 @@ class customer_activity(osv.osv):
             logger.notifyChannel('addons.'+self._name, netsvc.LOG_ERROR,'MySQL Connect Failed.')
             body_error_text = '[Error]MySQL Connect Failed.' 
             mail_type='[ERROR]'                       
-            return self.generate_mail(cr, uid, body_error_text, mail_type, admin_email, context)
+            return self._generate_mail(cr, uid, body_error_text, mail_type, admin_email, context)
 
         partner_ids = partner_obj.search(cr, uid, [])
         partners = partner_obj.browse(cr, uid, partner_ids)
@@ -94,14 +94,13 @@ class customer_activity(osv.osv):
                      FROM point_day_log \
                      LEFT JOIN common_member ON (point_day_log.uid = common_member.uid ) \
                      WHERE postdate = '%s' \
-                     AND UPPER(common_member.username) IN (%s)'''%(today - oneday,'"'+'","'.join(partner_name)+'"'))
+                     AND UPPER(common_member.username) IN (%s)'''%((today - oneday).strftime('%Y-%m-%d'),'"'+'","'.join(partner_name)+'"'))
         #读取Mysql数据列出前一天的网站用户的信息
         results = c.fetchall()
-        print results
         email = {}
         body1 = []
         body2 = []
-        if len(results) <= 0:
+        if not results or len(results) <= 0:
             logger.notifyChannel('addons.'+self._name, netsvc.LOG_ERROR,'Error! There is no data get from website!')
             body_error_text = 'Warning! There is no data get from website!'
         for result in results:           
@@ -120,9 +119,9 @@ class customer_activity(osv.osv):
                 partner_obj.write(cr, uid, ids, {'account_page_num':customer_activity['point'],'account_ukey_num':customer_activity['money']})
                 
                 #对于下载的数据进行筛选，并且分别按“正式用户”，"潜在用户"分别发邮件
-                if len(mail1) <= 0 or len(mail2) <= 0:
-                    #如果没设定 mail1 或者 mail2 则错误，结束流程 
-                    logger.notifyChannel('addons.'+self._name,netsvc.LOG_DEBUG,'Need to setup mail1 and mail2!')
+                if len(formal_mail) <= 0 or len(potential_mail) <= 0:
+                    #如果没设定 formal_mail 或者 potential_mail 则错误，结束流程 
+                    logger.notifyChannel('addons.'+self._name,netsvc.LOG_DEBUG,'Need to setup formal_mail and potential_mail!')
                     return False
                 if customer_activity['point'] < point or customer_activity['money'] < money:
                     partner = partner_obj.browse(cr, uid, ids[0])
@@ -132,16 +131,16 @@ class customer_activity(osv.osv):
                     if partner.partner_status.name == STATUS2:
                         body2.append(str(result[0])+'|'+str(result[2])+'|'+str(result[1]))
                 
-        if len(body1)>0 and len(mail1)>0:
+        if len(body1)>0 and len(formal_mail)>0:
             body_text='username|point|money \n'+'\n'.join(body1)
-            self.generate_mail(cr, uid, body_text, mail_type+'['+STATUS1+']', ";".join(mail1), context)
-        if len(body2)>0 and len(mail2)>0:
+            self._generate_mail(cr, uid, body_text, mail_type+'['+STATUS1+']', ";".join(formal_mail), context)
+        if len(body2)>0 and len(potential_mail)>0:
             body_text='username|point|money \n'+'\n'.join(body2)
-            self.generate_mail(cr, uid, body_text, mail_type+'['+STATUS2+']', ";".join(mail2), context)
+            self._generate_mail(cr, uid, body_text, mail_type+'['+STATUS2+']', ";".join(potential_mail), context)
         if body_error_text:
             mail_type = '[ERROR]'
-            self.generate_mail(cr, uid, body_error_text, mail_type, context)
+            self._generate_mail(cr, uid, body_error_text, mail_type, mail_to =False, context)
         return True
 
 customer_activity()
-    
+# vim:expandtab:smartindent:tabstop=4:softtabstop=4:shiftwidth=4:

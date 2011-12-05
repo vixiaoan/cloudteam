@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="utf-8"?>
 <openerp>
     <data>
     <record model="ir.ui.view" id="view_customer_activity_form">
@@ -22,7 +22,7 @@
         <field name="model">customer.activity</field>
         <field name="type">tree</field>
         <field name="arch" type="xml">
-            <tree string="customer_activity">
+            <tree string="Customer_activity">
                 <field name="partner_id" />
                 <field name="date" />
                 <field name="point" />
@@ -58,9 +58,9 @@
         <field name="res_model">customer.activity</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
-        <field name="search_view_id" ref = "view_customer_activity_filter"/>
+        <field name="search_view_id" ref="view_customer_activity_filter"/>
     </record>
      <menuitem name="Customer Activity"  id="menu_customer_activity" />
-     <menuitem name="Customer Activity"  parent= "menu_customer_activity" id="menu_customer_activity_setting"  action="action_customer_activity_setting"/>
+     <menuitem name="Customer Activity"  parent="menu_customer_activity" id="menu_customer_activity_setting"  action="action_customer_activity_setting"/>
     </data>
 </openerp>
