@@ -10,7 +10,7 @@
 
 增加了一个菜单用于显示取到的活跃度数据""",
     'author': 'Joshua<popkar77@gmail.com>',
-    'depends': [],
+    'depends': ['base'],
     'init_xml': [],
     'update_xml': ['customer_activity_view.xml','customer_activity_data.xml'],
     'demo_xml': [],
